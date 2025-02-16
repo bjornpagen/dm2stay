@@ -8,8 +8,7 @@ import "./src/env.js"
 const config = {
   experimental: {
     ppr: true,
-    dynamicIO: true,
-    reactCompiler: true
+    dynamicIO: true
   }
 }
 
