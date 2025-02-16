@@ -12,7 +12,7 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     BETTER_AUTH_SECRET: z.string(),
-    VERCEL_URL: z.string().url().optional()
+    VERCEL_URL: z.string().optional()
   },
 
   /**
@@ -21,7 +21,7 @@ export const env = createEnv({
    * `NEXT_PUBLIC_`.
    */
   client: {
-    NEXT_PUBLIC_VERCEL_URL: z.string().url().optional()
+    NEXT_PUBLIC_VERCEL_URL: z.string().optional()
   },
 
   /**
