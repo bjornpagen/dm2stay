@@ -5,8 +5,11 @@ import { useRouter } from "next/navigation"
 import { authClient } from "@/client/auth"
 import { Button } from "@/components/ui/button"
 import { LogOut } from "lucide-react"
+import { cn } from "@/lib/utils"
 
-export function SignOutButton() {
+type SignOutButtonProps = React.ComponentPropsWithoutRef<typeof Button>
+
+export function SignOutButton({ className, ...props }: SignOutButtonProps) {
   const router = useRouter()
 
   const handleSignOut = React.useCallback(async () => {
@@ -20,8 +23,14 @@ export function SignOutButton() {
   }, [router])
 
   return (
-    <Button onClick={handleSignOut} variant="ghost" size="sm">
-      <LogOut className="mr-2 h-4 w-4" />
+    <Button
+      onClick={handleSignOut}
+      variant="ghost"
+      size="sm"
+      className={cn("gap-2", className)}
+      {...props}
+    >
+      <LogOut className="h-4 w-4" />
       Sign Out
     </Button>
   )
