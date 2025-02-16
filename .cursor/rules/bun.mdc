@@ -1,0 +1,6 @@
+---
+description: Always use the `bun` package manager
+globs: 
+---
+Always use the `bun` package manager.
+Never attempt to use `npm`, `yarn`, `pnpm`, or other package manager.
