@@ -8,5 +8,5 @@ export default {
   dbCredentials: {
     url: env.DATABASE_URL
   },
-  tablesFilter: ["temp_*"]
+  schemaFilter: ["dm2stay"]
 } satisfies Config
