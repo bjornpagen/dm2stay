@@ -1,4 +1,4 @@
-import "@/styles/globals.css"
+import "@/shared/globals.css"
 
 import type { Metadata } from "next"
 
