@@ -38,6 +38,7 @@
     "react-dom": "^18.3.1",
     "tailwind-merge": "^3.0.1",
     "tailwindcss-animate": "^1.0.7",
+    "vercel": "^41.1.4",
     "zod": "^3.24.2"
   },
   "devDependencies": {
@@ -53,5 +54,5 @@
   "ct3aMetadata": {
     "initVersion": "7.38.1"
   },
-  "trustedDependencies": ["inngest-cli"]
+  "trustedDependencies": ["inngest-cli", "vercel"]
 }

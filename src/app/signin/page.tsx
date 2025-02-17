@@ -1,7 +1,7 @@
 import * as React from "react"
 import { redirect } from "next/navigation"
-import { authClient } from "@/client/auth"
 import { AuthForm } from "@/components/auth-form"
+import { auth } from "@/server/auth"
 
 async function signIn(formData: FormData) {
   "use server"
@@ -10,7 +10,7 @@ async function signIn(formData: FormData) {
   const password = formData.get("password") as string
   const remember = formData.get("remember") === "on"
 
-  const { error } = await authClient.signIn.email({
+  const { error } = await auth.api.email({
     email,
     password,
     callbackURL: "/dashboard",
