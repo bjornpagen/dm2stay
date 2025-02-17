@@ -2,26 +2,26 @@
 
 ## Initial Setup
 
-1. Install Vercel CLI:
+1. Install project dependencies:
 ```bash
-bun install -g vercel
+bun install
 ```
 
 2. Link your project to Vercel:
 ```bash
-vercel link
+bun run vercel link
 ```
 
 3. Pull environment variables:
 ```bash
-vercel env pull
+bun run vercel env pull
 ```
 
 ## Development
 
 ```bash
 bun install
-bun dev
+bun run dev
 ```
 
 ## Deployment
@@ -30,5 +30,5 @@ This project is deployed on [Vercel](https://vercel.com). Deployments are automa
 
 For manual deployments:
 ```bash
-vercel
+bun run vercel
 ```
