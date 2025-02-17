@@ -61,6 +61,7 @@ export const session = schema.table(
   },
   (table) => ({
     userIdIdx: index("session_user_id_idx").on(table.userId),
+    tokenIdx: index("session_token_idx").on(table.token),
     idLengthCheck: check("session_id_length", sql`length(${table.id}) = 24`)
   })
 )
@@ -129,6 +130,7 @@ export const verification = schema.table(
       .$onUpdateFn(() => new Date())
   },
   (table) => ({
+    identifierIdx: index("verification_identifier_idx").on(table.identifier),
     idLengthCheck: check(
       "verification_id_length",
       sql`length(${table.id}) = 24`
