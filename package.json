@@ -9,6 +9,7 @@
     "db:migrate": "drizzle-kit migrate",
     "db:push": "drizzle-kit push",
     "db:studio": "drizzle-kit studio",
+    "db:drop": "bun run src/server/db/script/drop.ts",
     "dev": "next dev --turbo",
     "dev:inngest": "inngest-cli dev",
     "format:write": "biome format --write .",
