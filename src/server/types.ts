@@ -3,14 +3,14 @@ export interface Listing {
   data: ListingData
 }
 
-export interface Metadata {
+interface Metadata {
   timestamp: string
   url: string
   listingId: string
   duration: number
 }
 
-export interface ListingData {
+interface ListingData {
   h1Title: string
   overview: Overview
   amenities: Amenities
@@ -22,7 +22,7 @@ export interface ListingData {
   reviews: Review[]
 }
 
-export interface Overview {
+interface Overview {
   title: string
   propertyType: string
   location: string
@@ -35,7 +35,7 @@ export interface Overview {
   imageUrl: string | null
 }
 
-export interface Ratings {
+interface Ratings {
   accuracy: number
   checkin: number
   cleanliness: number
@@ -45,25 +45,25 @@ export interface Ratings {
   overall: number
 }
 
-export interface Amenities {
+interface Amenities {
   title: string
   count: number
   groups: AmenityGroup[]
 }
 
-export interface AmenityGroup {
+interface AmenityGroup {
   title: string
   amenities: Amenity[]
 }
 
-export interface Amenity {
+interface Amenity {
   title: string
   subtitle: string | null
   icon: string | null
   available: boolean
 }
 
-export interface Location {
+interface Location {
   title: string
   subtitle: string | null
   coordinates: Coordinates
@@ -78,29 +78,29 @@ export interface Location {
   locationDisclaimer: string | null
 }
 
-export interface Coordinates {
+interface Coordinates {
   lat: number
   lng: number
 }
 
-export interface LocationDetails {
+interface LocationDetails {
   preview: unknown
   full: LocationDetail[]
 }
 
-export interface LocationDetail {
+interface LocationDetail {
   id: string
   type: string
   title: string
   content: string | null
 }
 
-export interface Verification {
+interface Verification {
   isVerified: boolean
-  helpText: string
+  helpText: string | null
 }
 
-export interface Host {
+interface Host {
   title: string
   host: HostDetails
   about: string | null
@@ -110,7 +110,7 @@ export interface Host {
   disclaimer: string | null
 }
 
-export interface HostDetails {
+interface HostDetails {
   name: string
   userId: string
   isSuperhost: boolean
@@ -119,31 +119,31 @@ export interface HostDetails {
   stats: HostStats
 }
 
-export interface HostStats {
+interface HostStats {
   reviews: number
   rating: number
   yearsHosting: number
   monthsHosting: number
 }
 
-export interface HostHighlight {
+interface HostHighlight {
   icon: string
   title: string
 }
 
-export interface Cohost {
+interface Cohost {
   name: string
   userId: string
   profilePicture: string
 }
 
-export interface HostExtraDetails {
+interface HostExtraDetails {
   responseDetails: string[]
   superhostTitle: string
   superhostDescription: string
 }
 
-export interface Policies {
+interface Policies {
   title: string
   cancellation: CancellationPolicy
   houseRules: HouseRules
@@ -151,7 +151,7 @@ export interface Policies {
   disclaimer: string | null
 }
 
-export interface CancellationPolicy {
+interface CancellationPolicy {
   title: string
   policy: string
   details: string
@@ -159,7 +159,7 @@ export interface CancellationPolicy {
   disclaimers: string[]
 }
 
-export interface CancellationMilestone {
+interface CancellationMilestone {
   type: string
   timeframe: Timeframe | null
   refund: string | null
@@ -167,61 +167,61 @@ export interface CancellationMilestone {
   endAt: string | null
 }
 
-export interface Timeframe {
+interface Timeframe {
   title: string
   dates: string[]
 }
 
-export interface HouseRules {
+interface HouseRules {
   title: string
   subtitle: string
   sections: HouseRuleSection[]
 }
 
-export interface HouseRuleSection {
+interface HouseRuleSection {
   title: string
   rules: HouseRule[]
 }
 
-export interface HouseRule {
+interface HouseRule {
   title: string
   icon: string | null
   subtitle: string | null
   details: string | null
 }
 
-export interface Safety {
+interface Safety {
   title: string
   subtitle: string
   items: SafetyItem[]
 }
 
-export interface SafetyItem {
+interface SafetyItem {
   title: string
   icon: string | null
 }
 
-export interface Description {
+interface Description {
   title: string
   sections: DescriptionSection[]
 }
 
-export interface DescriptionSection {
+interface DescriptionSection {
   title: string | null
   content: string
 }
 
-export interface Gallery {
+interface Gallery {
   title: string
   rooms: GalleryRoom[]
 }
 
-export interface GalleryRoom {
+interface GalleryRoom {
   title: string | null
   images: GalleryImage[]
 }
 
-export interface GalleryImage {
+interface GalleryImage {
   caption: string | null
   accessibilityLabel: string | null
   src: string
@@ -229,7 +229,7 @@ export interface GalleryImage {
   orientation: "LANDSCAPE" | "PORTRAIT"
 }
 
-export interface Review {
+interface Review {
   id: string
   rating: number
   date: string
@@ -239,7 +239,7 @@ export interface Review {
   response: string | null
 }
 
-export interface Reviewer {
+interface Reviewer {
   name: string
   location: string | null
   id: string
