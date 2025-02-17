@@ -3,6 +3,7 @@ import { ApifyClient } from "apify-client"
 import { env } from "@/env"
 import { inngest } from "@/inngest/client"
 import type { Listing } from "@/server/types"
+import * as schema from "@/server/db/schema"
 
 const client = new ApifyClient({ token: env.APIFY_API_TOKEN })
 const airbnbListingScraper = client.actor("PD6Eb2AlmsXqGxffs")
@@ -49,6 +50,13 @@ export const completed = inngest.createFunction(
     if (!listing) {
       throw new Error("Listing data not found")
     }
+
+    const { db } = await import("@/server/db")
+    await db.insert(schema.listing).values({
+      airbnbUrl: listing.metadata.url,
+      airbnbId: listing.metadata.listingId,
+      data: listing.data
+    })
 
     return {
       success: true,

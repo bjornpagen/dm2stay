@@ -10,7 +10,7 @@ interface Metadata {
   duration: number
 }
 
-interface ListingData {
+export interface ListingData {
   h1Title: string
   overview: Overview
   amenities: Amenities

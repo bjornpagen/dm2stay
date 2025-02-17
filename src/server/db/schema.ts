@@ -6,10 +6,13 @@ import {
   boolean,
   index,
   check,
-  uniqueIndex
+  uniqueIndex,
+  integer,
+  jsonb
 } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 import { relations } from "drizzle-orm"
+import type { ListingData } from "../types"
 
 export const schema = pgSchema("dm2stay")
 
@@ -135,5 +138,49 @@ export const verification = schema.table(
       "verification_id_length",
       sql`length(${table.id}) = 24`
     )
+  })
+)
+
+// END OF BETTERAUTH TABLES
+
+export const file = schema.table(
+  "file",
+  {
+    id: text("id").primaryKey().notNull().$default(createId),
+    name: text("name").notNull(),
+    size: integer("size").notNull(),
+    type: text("type").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: false })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: timestamp("updated_at", { withTimezone: false })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date())
+  },
+  (table) => ({
+    idLengthCheck: check("file_id_length", sql`length(${table.id}) = 24`)
+  })
+)
+
+export const listing = schema.table(
+  "listing",
+  {
+    id: text("id").primaryKey().notNull().$default(createId),
+    airbnbUrl: text("airbnb_url").notNull(),
+    airbnbId: text("airbnb_id").notNull(),
+    data: jsonb("data").$type<ListingData>().notNull(),
+    createdAt: timestamp("created_at", { withTimezone: false })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: timestamp("updated_at", { withTimezone: false })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date())
+  },
+  (table) => ({
+    airbnbUrlIdx: uniqueIndex("listing_airbnb_url_idx").on(table.airbnbUrl),
+    airbnbIdIdx: uniqueIndex("listing_airbnb_id_idx").on(table.airbnbId),
+    idLengthCheck: check("listing_id_length", sql`length(${table.id}) = 24`)
   })
 )
