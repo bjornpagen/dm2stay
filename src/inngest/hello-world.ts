@@ -1,6 +1,6 @@
 import { inngest } from "@/inngest/client"
 
-export default inngest.createFunction(
+export const helloWorld = inngest.createFunction(
   { id: "hello-world" },
   { event: "test/hello.world" as const },
   async ({ event, step }) => {

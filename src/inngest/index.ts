@@ -1,3 +1,4 @@
-import helloWorld from "@/inngest/hello-world"
+import { helloWorld } from "@/inngest/hello-world"
+import { queue } from "@/inngest/apify"
 
-export default [helloWorld]
+export default [helloWorld, queue]

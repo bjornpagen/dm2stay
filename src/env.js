@@ -12,7 +12,9 @@ export const env = createEnv({
       .enum(["development", "test", "production"])
       .default("development"),
     BETTER_AUTH_SECRET: z.string(),
-    VERCEL_URL: z.string().optional()
+    VERCEL_URL: z.string().optional(),
+    APIFY_API_TOKEN: z.string(),
+    APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL: z.string().url()
   },
 
   /**
@@ -30,7 +32,10 @@ export const env = createEnv({
     DATABASE_URL: process.env.DATABASE_URL,
     NODE_ENV: process.env.NODE_ENV,
     BETTER_AUTH_SECRET: process.env.BETTER_AUTH_SECRET,
-    VERCEL_URL: process.env.VERCEL_URL
+    VERCEL_URL: process.env.VERCEL_URL,
+    APIFY_API_TOKEN: process.env.APIFY_API_TOKEN,
+    APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL:
+      process.env.APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
