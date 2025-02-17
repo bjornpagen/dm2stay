@@ -32,7 +32,6 @@ export function AuthForm({ type }: AuthFormProps) {
       const { error } = await authClient.signIn.email({
         email,
         password,
-        callbackURL: "/dashboard",
         rememberMe: remember
       })
 
@@ -46,15 +45,14 @@ export function AuthForm({ type }: AuthFormProps) {
       const { error } = await authClient.signUp.email({
         email,
         password,
-        name,
-        callbackURL: "/dashboard"
+        name
       })
 
       if (error) {
         throw new Error(error.message)
       }
 
-      redirect("/signin")
+      redirect("/dashboard")
     }
   }
 
