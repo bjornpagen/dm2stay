@@ -53,7 +53,7 @@ export const completed = inngest.createFunction(
     return {
       success: true,
       runId: actorRunId,
-      listingData
+      data: listingData
     }
   }
 )
