@@ -14,7 +14,7 @@ import {
   CardFooter
 } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
-import { authClient } from "@/client/auth"
+import { authClient } from "@/lib/auth"
 
 type AuthFormProps = {
   type: "signin" | "signup"
