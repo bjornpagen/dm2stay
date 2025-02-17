@@ -12,6 +12,8 @@ async function dropTables() {
     schema.verification,
     schema.session,
     schema.account,
+    schema.listing,
+    schema.file,
     schema.user
   ]
 
