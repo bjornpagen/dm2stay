@@ -167,9 +167,10 @@ export const listing = schema.table(
   "listing",
   {
     id: text("id").primaryKey().notNull().$default(createId),
-    userId: text("user_id").references(() => user.id),
-    airbnbUrl: text("airbnb_url").notNull(),
-    airbnbId: text("airbnb_id"),
+    airbnbId: text("airbnb_id").notNull(),
+    airbnbUrl: text("airbnb_url")
+      .notNull()
+      .generatedAlwaysAs(sql`'https://www.airbnb.com/rooms/' || "airbnb_id"`),
     data: jsonb("data").$type<ListingData>(),
     createdAt: timestamp("created_at", { withTimezone: false })
       .notNull()
@@ -180,7 +181,6 @@ export const listing = schema.table(
       .$onUpdateFn(() => new Date())
   },
   (table) => ({
-    airbnbUrlIdx: uniqueIndex("listing_airbnb_url_idx").on(table.airbnbUrl),
     airbnbIdIdx: uniqueIndex("listing_airbnb_id_idx").on(table.airbnbId),
     idLengthCheck: check("listing_id_length", sql`length(${table.id}) = 24`),
     dataCheck: check(
@@ -190,9 +190,39 @@ export const listing = schema.table(
   })
 )
 
-export const listingRelations = relations(listing, ({ one }) => ({
+export const userListing = schema.table(
+  "user_listing",
+  {
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id),
+    listingId: text("listing_id")
+      .notNull()
+      .references(() => listing.id),
+    createdAt: timestamp("created_at", { withTimezone: false })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: timestamp("updated_at", { withTimezone: false })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date())
+  },
+  (table) => ({
+    pk: uniqueIndex("user_listing_pk").on(table.userId, table.listingId)
+  })
+)
+
+export const listingRelations = relations(listing, ({ many }) => ({
+  users: many(userListing)
+}))
+
+export const userListingRelations = relations(userListing, ({ one }) => ({
   user: one(user, {
-    fields: [listing.userId],
+    fields: [userListing.userId],
     references: [user.id]
+  }),
+  listing: one(listing, {
+    fields: [userListing.listingId],
+    references: [listing.id]
   })
 }))

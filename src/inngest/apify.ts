@@ -13,10 +13,10 @@ export const queue = inngest.createFunction(
   { id: "apify-queue-scraping" },
   { event: "apify/scrape.queued" },
   async ({ event }) => {
-    const { url } = event.data
+    const { airbnbId } = event.data
 
     const input = {
-      startUrls: [{ url }]
+      startUrls: [{ url: `https://www.airbnb.com/rooms/${airbnbId}` }]
     }
 
     const run = await airbnbListingScraper.start(input, {
@@ -52,26 +52,30 @@ export const completed = inngest.createFunction(
       throw new Error("Listing data not found")
     }
 
-    await db
+    const result = await db
       .insert(schema.listing)
       .values({
-        airbnbUrl: listing.metadata.url,
         airbnbId: listing.metadata.listingId,
         data: listing.data
       })
       .onConflictDoUpdate({
-        target: [schema.listing.airbnbId, schema.listing.airbnbUrl],
+        target: schema.listing.airbnbId,
         set: {
           airbnbId: listing.metadata.listingId,
           data: listing.data,
           updatedAt: new Date()
         }
       })
+      .returning()
+      .then((result) => result[0])
+    if (!result) {
+      throw new Error("Failed to create listing")
+    }
 
     return {
       success: true,
       runId: actorRunId,
-      listing
+      result
     }
   }
 )

@@ -9,17 +9,7 @@ const events = {
   },
   "apify/scrape.queued": {
     data: z.object({
-      url: z
-        .string()
-        .url()
-        .refine((url) => {
-          try {
-            const { hostname } = new URL(url)
-            return hostname === "www.airbnb.com" || hostname === "airbnb.com"
-          } catch {
-            return false
-          }
-        }, "URL must be from airbnb.com")
+      airbnbId: z.string()
     })
   },
   "apify/scrape.completed": {

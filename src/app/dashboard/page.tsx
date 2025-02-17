@@ -5,6 +5,8 @@ import { getSession } from "@/server/auth"
 import { redirect } from "next/navigation"
 import { inngest } from "@/inngest/client"
 import * as schema from "@/server/db/schema"
+import { desc, eq } from "drizzle-orm"
+import { AirbnbListingUrl } from "@/lib/utils"
 
 async function importProperty(url: string) {
   "use server"
@@ -14,14 +16,38 @@ async function importProperty(url: string) {
     throw new Error("Unauthorized")
   }
 
-  await db.insert(schema.listing).values({
-    airbnbUrl: url,
-    userId: session.user.id
+  const { airbnbId } = AirbnbListingUrl.parse(url)
+
+  await db.transaction(async (tx) => {
+    const listing = await tx
+      .insert(schema.listing)
+      .values({
+        airbnbId
+      })
+      .onConflictDoUpdate({
+        target: schema.listing.airbnbId,
+        set: { updatedAt: new Date() }
+      })
+      .returning()
+      .then((result) => result[0])
+    if (!listing) {
+      throw new Error("Failed to create listing")
+    }
+
+    await tx
+      .insert(schema.userListing)
+      .values({
+        userId: session.user.id,
+        listingId: listing.id
+      })
+      .onConflictDoNothing()
+
+    return listing
   })
 
   await inngest.send({
     name: "apify/scrape.queued",
-    data: { url }
+    data: { airbnbId }
   })
 }
 
@@ -31,9 +57,20 @@ async function DashboardContent() {
     redirect("/")
   }
 
-  const listings = await db.query.listing.findMany({
-    where: (listing, { eq }) => eq(listing.userId, session.user.id)
-  })
+  const listings = await db
+    .select({
+      id: schema.listing.id,
+      airbnbUrl: schema.listing.airbnbUrl,
+      airbnbId: schema.listing.airbnbId,
+      data: schema.listing.data
+    })
+    .from(schema.userListing)
+    .innerJoin(
+      schema.listing,
+      eq(schema.listing.id, schema.userListing.listingId)
+    )
+    .where(eq(schema.userListing.userId, session.user.id))
+    .orderBy(desc(schema.listing.createdAt))
 
   return <Dashboard listings={listings} importProperty={importProperty} />
 }
