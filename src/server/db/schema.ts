@@ -10,7 +10,6 @@ import {
   integer,
   jsonb,
   primaryKey,
-  pgEnum,
   date
 } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
@@ -250,7 +249,7 @@ export const listingRelations = relations(listing, ({ one, many }) => ({
   bookings: many(booking)
 }))
 
-export const prospectSource = pgEnum("prospect_source", [
+export const prospectSource = schema.enum("prospect_source", [
   "instagram_dm",
   "tiktok_dm",
   "email",
@@ -287,7 +286,11 @@ export const prospect = schema.table(
   })
 )
 
-export const messageType = pgEnum("message_type", ["prospect", "ai", "user"])
+export const messageType = schema.enum("message_type", [
+  "prospect",
+  "ai",
+  "user"
+])
 
 export const message = schema.table(
   "message",
