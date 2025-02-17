@@ -1,3 +1,3 @@
-import { helloWorld } from "./functions"
+import helloWorld from "@/inngest/hello-world"
 
 export default [helloWorld]
