@@ -9,7 +9,7 @@ const client = new ApifyClient({ token: env.APIFY_API_TOKEN })
 const airbnbListingScraper = client.actor(ACTOR_ID)
 
 export const queue = inngest.createFunction(
-  { id: "apify-scrape-queued" },
+  { id: "apify-queue-scraping" },
   { event: "apify/scrape.queued" },
   async ({ event }) => {
     const { url } = event.data
