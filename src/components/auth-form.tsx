@@ -1,3 +1,7 @@
+"use client"
+
+import type * as React from "react"
+import { redirect } from "next/navigation"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
 import { Label } from "@/components/ui/label"
@@ -10,16 +14,53 @@ import {
   CardFooter
 } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
+import { authClient } from "@/client/auth"
 
 type AuthFormProps = {
   type: "signin" | "signup"
-  action: (formData: FormData) => Promise<void>
 }
 
-export function AuthForm({ type, action }: AuthFormProps) {
+export function AuthForm({ type }: AuthFormProps) {
+  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    const formData = new FormData(e.currentTarget)
+    const email = formData.get("email") as string
+    const password = formData.get("password") as string
+
+    if (type === "signin") {
+      const remember = formData.get("remember") === "on"
+      const { error } = await authClient.signIn.email({
+        email,
+        password,
+        callbackURL: "/dashboard",
+        rememberMe: remember
+      })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      redirect("/dashboard")
+    } else {
+      const name = formData.get("name") as string
+      const { error } = await authClient.signUp.email({
+        email,
+        password,
+        name,
+        callbackURL: "/dashboard"
+      })
+
+      if (error) {
+        throw new Error(error.message)
+      }
+
+      redirect("/signin")
+    }
+  }
+
   return (
     <Card className="w-full max-w-md mx-auto">
-      <form action={action}>
+      <form onSubmit={handleSubmit}>
         <CardHeader>
           <CardTitle>
             {type === "signin" ? "Sign In" : "Create Account"}
