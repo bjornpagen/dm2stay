@@ -10,6 +10,7 @@ async function signIn(formData: FormData) {
   const password = formData.get("password") as string
   const remember = formData.get("remember") === "on"
 
+  // LOOK I FIXED IT
   const { error } = await auth.api.email({
     email,
     password,
