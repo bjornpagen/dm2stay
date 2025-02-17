@@ -4,41 +4,17 @@ const projectDir = process.cwd()
 loadEnvConfig(projectDir)
 
 import { db } from "@/server/db"
-import { sql, getTableName } from "drizzle-orm"
-import * as schema from "@/server/db/schema"
+import { sql } from "drizzle-orm"
 
-async function dropTables() {
-  const tables = [
-    schema.verification,
-    schema.session,
-    schema.account,
-    schema.userListing,
-    schema.listing,
-    schema.file,
-    schema.user
-  ]
-
-  for (const table of tables) {
-    const tableName = getTableName(table)
-    const exists = await db.execute(
-      sql`SELECT EXISTS (
-        SELECT FROM information_schema.tables
-        WHERE table_schema = 'dm2stay'
-        AND table_name = ${tableName}
-      )`
-    )
-    const tableExists = exists[0]?.exists ?? false
-    if (tableExists) {
-      console.log(`Dropping ${tableName}...`)
-      await db.execute(sql`DROP TABLE IF EXISTS ${table} CASCADE`)
-      console.log(`✓ ${tableName}`)
-    }
-  }
+async function dropSchema() {
+  console.log("Dropping schema dm2stay...")
+  await db.execute(sql`DROP SCHEMA IF EXISTS dm2stay CASCADE`)
+  console.log("✓ Schema dropped")
 }
 
-dropTables()
+dropSchema()
   .then(() => process.exit(0))
   .catch((error) => {
-    console.error("Error dropping tables:", error)
+    console.error("Error dropping schema:", error)
     process.exit(1)
   })

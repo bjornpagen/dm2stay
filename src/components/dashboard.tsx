@@ -9,9 +9,8 @@ import { Input } from "@/components/ui/input"
 export type DashboardProps = {
   listings: Array<{
     id: string
-    airbnbUrl: string
     airbnbId: string | null
-    data: ListingData | null
+    airbnbData: ListingData | null
   }>
   importProperty: (url: string) => Promise<void>
 }
@@ -63,17 +62,19 @@ export function Dashboard({ listings, importProperty }: DashboardProps) {
             >
               <div className="space-y-2">
                 <div className="font-medium">
-                  {listing.data?.h1Title || "Loading property details..."}
+                  {listing.airbnbData?.h1Title || "Loading property details..."}
                 </div>
                 <div className="text-sm text-muted-foreground">
-                  {listing.airbnbUrl}
+                  {listing.airbnbId
+                    ? `https://www.airbnb.com/rooms/${listing.airbnbId}`
+                    : "No Airbnb listing"}
                 </div>
-                {listing.data && (
+                {listing.airbnbData && (
                   <div className="text-sm">
-                    <div>{listing.data.location.address}</div>
+                    <div>{listing.airbnbData.location.address}</div>
                     <div>
-                      {listing.data.overview.propertyType} ·{" "}
-                      {listing.data.overview.capacity} guests
+                      {listing.airbnbData.overview.propertyType} ·{" "}
+                      {listing.airbnbData.overview.capacity} guests
                     </div>
                   </div>
                 )}

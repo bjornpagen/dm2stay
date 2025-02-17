@@ -53,15 +53,14 @@ export const completed = inngest.createFunction(
     }
 
     const result = await db
-      .insert(schema.listing)
+      .insert(schema.airbnbListing)
       .values({
         airbnbId: listing.metadata.listingId,
         data: listing.data
       })
       .onConflictDoUpdate({
-        target: schema.listing.airbnbId,
+        target: schema.airbnbListing.airbnbId,
         set: {
-          airbnbId: listing.metadata.listingId,
           data: listing.data,
           updatedAt: new Date()
         }
@@ -69,7 +68,7 @@ export const completed = inngest.createFunction(
       .returning()
       .then((result) => result[0])
     if (!result) {
-      throw new Error("Failed to create listing")
+      throw new Error("Failed to create Airbnb listing")
     }
 
     return {

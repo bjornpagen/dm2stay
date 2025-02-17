@@ -7,6 +7,16 @@ const events = {
       name: z.string()
     })
   },
+  "agent/message.received": {
+    data: z.object({
+      messageId: z.string()
+    })
+  },
+  "agent/message.generated": {
+    data: z.object({
+      messageId: z.string()
+    })
+  },
   "apify/scrape.queued": {
     data: z.object({
       airbnbId: z.string()

@@ -19,28 +19,31 @@ async function importProperty(url: string) {
   const { airbnbId } = AirbnbListingUrl.parse(url)
 
   await db.transaction(async (tx) => {
-    const listing = await tx
-      .insert(schema.listing)
+    const airbnbListing = await tx
+      .insert(schema.airbnbListing)
       .values({
         airbnbId
       })
       .onConflictDoUpdate({
-        target: schema.listing.airbnbId,
+        target: schema.airbnbListing.airbnbId,
         set: { updatedAt: new Date() }
       })
       .returning()
       .then((result) => result[0])
-    if (!listing) {
-      throw new Error("Failed to create listing")
+    if (!airbnbListing) {
+      throw new Error("Failed to create Airbnb listing")
     }
 
     await tx
-      .insert(schema.userListing)
+      .insert(schema.listing)
       .values({
         userId: session.user.id,
-        listingId: listing.id
+        airbnbId: airbnbListing.airbnbId
       })
-      .onConflictDoNothing()
+      .onConflictDoUpdate({
+        target: [schema.listing.userId, schema.listing.airbnbId],
+        set: { updatedAt: new Date() }
+      })
 
     await inngest.send({
       name: "apify/scrape.queued",
@@ -58,16 +61,15 @@ async function DashboardContent() {
   const listings = await db
     .select({
       id: schema.listing.id,
-      airbnbUrl: schema.listing.airbnbUrl,
       airbnbId: schema.listing.airbnbId,
-      data: schema.listing.data
+      airbnbData: schema.airbnbListing.data
     })
-    .from(schema.userListing)
-    .innerJoin(
-      schema.listing,
-      eq(schema.listing.id, schema.userListing.listingId)
+    .from(schema.listing)
+    .leftJoin(
+      schema.airbnbListing,
+      eq(schema.listing.airbnbId, schema.airbnbListing.airbnbId)
     )
-    .where(eq(schema.userListing.userId, session.user.id))
+    .where(eq(schema.listing.userId, session.user.id))
     .orderBy(desc(schema.listing.createdAt))
 
   return <Dashboard listings={listings} importProperty={importProperty} />
