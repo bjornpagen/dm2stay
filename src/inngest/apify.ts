@@ -3,10 +3,8 @@ import { ApifyClient } from "apify-client"
 import { env } from "@/env"
 import { inngest } from "@/inngest/client"
 
-const ACTOR_ID = "PD6Eb2AlmsXqGxffs"
-
 const client = new ApifyClient({ token: env.APIFY_API_TOKEN })
-const airbnbListingScraper = client.actor(ACTOR_ID)
+const airbnbListingScraper = client.actor("PD6Eb2AlmsXqGxffs")
 
 export const queue = inngest.createFunction(
   { id: "apify-queue-scraping" },

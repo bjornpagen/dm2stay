@@ -23,7 +23,15 @@ const events = {
     })
   },
   "apify/scrape.completed": {
-    data: z.any()
+    data: z.object({
+      userId: z.string(),
+      createdAt: z.string().datetime(),
+      eventType: z.enum(["ACTOR.RUN.SUCCEEDED"]),
+      eventData: z.object({
+        actorId: z.string(),
+        actorRunId: z.string()
+      })
+    })
   }
 }
 
