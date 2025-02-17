@@ -167,9 +167,10 @@ export const listing = schema.table(
   "listing",
   {
     id: text("id").primaryKey().notNull().$default(createId),
+    userId: text("user_id").references(() => user.id),
     airbnbUrl: text("airbnb_url").notNull(),
-    airbnbId: text("airbnb_id").notNull(),
-    data: jsonb("data").$type<ListingData>().notNull(),
+    airbnbId: text("airbnb_id"),
+    data: jsonb("data").$type<ListingData>(),
     createdAt: timestamp("created_at", { withTimezone: false })
       .notNull()
       .$defaultFn(() => new Date()),
@@ -181,6 +182,17 @@ export const listing = schema.table(
   (table) => ({
     airbnbUrlIdx: uniqueIndex("listing_airbnb_url_idx").on(table.airbnbUrl),
     airbnbIdIdx: uniqueIndex("listing_airbnb_id_idx").on(table.airbnbId),
-    idLengthCheck: check("listing_id_length", sql`length(${table.id}) = 24`)
+    idLengthCheck: check("listing_id_length", sql`length(${table.id}) = 24`),
+    dataCheck: check(
+      "listing_data_check",
+      sql`(${table.airbnbId} IS NULL AND ${table.data} IS NULL) OR (${table.airbnbId} IS NOT NULL AND ${table.data} IS NOT NULL)`
+    )
   })
 )
+
+export const listingRelations = relations(listing, ({ one }) => ({
+  user: one(user, {
+    fields: [listing.userId],
+    references: [user.id]
+  })
+}))

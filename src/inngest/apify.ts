@@ -52,11 +52,21 @@ export const completed = inngest.createFunction(
     }
 
     const { db } = await import("@/server/db")
-    await db.insert(schema.listing).values({
-      airbnbUrl: listing.metadata.url,
-      airbnbId: listing.metadata.listingId,
-      data: listing.data
-    })
+    await db
+      .insert(schema.listing)
+      .values({
+        airbnbUrl: listing.metadata.url,
+        airbnbId: listing.metadata.listingId,
+        data: listing.data
+      })
+      .onConflictDoUpdate({
+        target: schema.listing.airbnbId,
+        set: {
+          airbnbId: listing.metadata.listingId,
+          data: listing.data,
+          updatedAt: new Date()
+        }
+      })
 
     return {
       success: true,
