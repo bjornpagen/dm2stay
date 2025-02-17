@@ -42,12 +42,10 @@ async function importProperty(url: string) {
       })
       .onConflictDoNothing()
 
-    return listing
-  })
-
-  await inngest.send({
-    name: "apify/scrape.queued",
-    data: { airbnbId }
+    await inngest.send({
+      name: "apify/scrape.queued",
+      data: { airbnbId }
+    })
   })
 }
 

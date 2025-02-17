@@ -8,7 +8,8 @@ import {
   check,
   uniqueIndex,
   integer,
-  jsonb
+  jsonb,
+  primaryKey
 } from "drizzle-orm/pg-core"
 import { sql } from "drizzle-orm"
 import { relations } from "drizzle-orm"
@@ -208,7 +209,7 @@ export const userListing = schema.table(
       .$onUpdateFn(() => new Date())
   },
   (table) => ({
-    pk: uniqueIndex("user_listing_pk").on(table.userId, table.listingId)
+    pk: primaryKey({ columns: [table.userId, table.listingId] })
   })
 )
 
