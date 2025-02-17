@@ -1,0 +1,78 @@
+---
+description: Drizzle Query Standards
+globs: src/**/*.{ts,tsx}
+---
+# Drizzle Query Standards
+
+Standards for writing Drizzle ORM queries.
+
+<rule>
+name: drizzle_queries
+description: Standards for writing Drizzle queries to ensure optimal performance and type safety
+filters:
+  - type: file_extension
+    pattern: "\\.(ts|tsx)$"
+  - type: content
+    pattern: "db\\.query\\.(findMany|findFirst)"
+
+actions:
+  - type: reject
+    conditions:
+      - pattern: "db\\.query\\.(findMany|findFirst)"
+        message: "Do not use db.query.findMany or db.query.findFirst. Use direct SQL queries instead."
+
+  - type: suggest
+    message: |
+      When writing Drizzle queries:
+
+      1. Never use:
+         - db.query.findMany()
+         - db.query.findFirst()
+
+      2. Instead use direct SQL queries:
+         ```typescript
+         // Bad: Using query builders
+         const user = await db.query.users.findFirst({
+           where: eq(users.id, userId)
+         });
+
+         // Good: Using direct SQL queries
+         const user = await db
+           .select()
+           .from(users)
+           .where(eq(users.id, userId))
+           .limit(1);
+
+         // Bad: Using findMany
+         const activeUsers = await db.query.users.findMany({
+           where: eq(users.status, 'active')
+         });
+
+         // Good: Using direct SQL query
+         const activeUsers = await db
+           .select()
+           .from(users)
+           .where(eq(users.status, 'active'));
+         ```
+
+      3. Benefits of direct queries:
+         - Better performance
+         - More explicit SQL operations
+         - Full type safety
+         - Better control over the generated SQL
+
+examples:
+  - input: |
+      // Bad: Using query builders
+      const result = await db.query.users.findMany();
+      const user = await db.query.users.findFirst();
+
+      // Good: Using direct queries
+      const result = await db.select().from(users);
+      const user = await db.select().from(users).limit(1);
+    output: "Correctly using Drizzle queries"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule>

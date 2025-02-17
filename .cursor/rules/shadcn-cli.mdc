@@ -1,0 +1,53 @@
+---
+description: shadcn CLI Usage Standards
+---
+# shadcn CLI Usage Standards
+
+Standards for installing and managing shadcn components.
+
+<rule>
+name: shadcn_cli
+description: Standards for using the shadcn CLI to add components
+
+actions:
+  - type: suggest
+    message: |
+      When adding shadcn components:
+
+      1. CLI Usage:
+         - Always use the canary version of shadcn CLI with bun
+         - Command format: `bunx shadcn@canary add <component-name(s)>`
+         
+         Example:
+         ```bash
+         # Adding a single component
+         bunx shadcn@canary add button
+
+         # Adding multiple components
+         bunx shadcn@canary add button card toast
+         ```
+
+      2. Best Practices:
+         - Add components only as needed, avoid installing unused components
+         - Components will be automatically added to the @/components/ui directory
+         - After adding components, they can be imported from @/components/ui
+
+examples:
+  - input: |
+      # Bad: Using npm or wrong version
+      npm install @shadcn/ui
+      npx shadcn-ui add button
+
+      # Bad: Using wrong CLI command format
+      bunx shadcn add button
+      bunx shadcn-ui@latest add button
+
+      # Good: Using correct CLI command
+      bunx shadcn@canary add button
+      bunx shadcn@canary add button card dialog
+    output: "Correctly using shadcn CLI"
+
+metadata:
+  priority: high
+  version: 1.0
+</rule> 
