@@ -17,11 +17,26 @@ bun run vercel link
 bun run vercel env pull
 ```
 
+## Adding UI Components
+
+This project uses shadcn/ui canary version. Do not use the latest version.
+
+To add new components:
+```bash
+bunx --bun shadcn-ui@canary add <component>
+```
+
+Example:
+```bash
+bunx --bun shadcn-ui@canary add button
+```
+
 ## Development
 
 ```bash
 bun install
-bun run dev
+bun run dev        # Start the Next.js development server
+bun run dev:inngest # Start the Inngest development server (in a separate terminal)
 ```
 
 ## Deployment
