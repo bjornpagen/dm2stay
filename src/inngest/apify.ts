@@ -28,3 +28,20 @@ export const queue = inngest.createFunction(
     return { runId: run.id }
   }
 )
+
+export const completed = inngest.createFunction(
+  { id: "apify-handle-completed" },
+  { event: "apify/scrape.completed" },
+  async ({ event }) => {
+    const { eventData } = event.data
+    const { actorRunId } = eventData
+
+    const items = await client.dataset(actorRunId).listItems()
+
+    return {
+      success: true,
+      runId: actorRunId,
+      results: items
+    }
+  }
+)
