@@ -8,7 +8,6 @@ const events = {
   }
 }
 
-// Create a client to send and receive events
 export const inngest = new Inngest({
   id: "dm2stay",
   schemas: new EventSchemas().fromZod(events)
