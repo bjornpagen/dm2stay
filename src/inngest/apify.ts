@@ -60,7 +60,7 @@ export const completed = inngest.createFunction(
         data: listing.data
       })
       .onConflictDoUpdate({
-        target: schema.listing.airbnbId,
+        target: [schema.listing.airbnbId, schema.listing.airbnbUrl],
         set: {
           airbnbId: listing.metadata.listingId,
           data: listing.data,
