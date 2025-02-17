@@ -8,19 +8,25 @@ import { nextCookies } from "better-auth/next-js"
 import { headers } from "next/headers"
 
 export const auth = betterAuth({
+  database: drizzleAdapter(db, {
+    provider: "pg"
+  }),
   secret: env.BETTER_AUTH_SECRET,
   baseURL: env.VERCEL_URL
     ? `https://${env.VERCEL_URL}`
     : "http://localhost:3000",
-  database: drizzleAdapter(db, {
-    provider: "pg"
-  }),
-  advanced: {
-    generateId: false
-  },
   plugins: [nextCookies()],
   emailAndPassword: {
     enabled: true
+  },
+  session: {
+    cookieCache: {
+      enabled: true,
+      maxAge: 5 * 60
+    }
+  },
+  advanced: {
+    generateId: false
   }
 })
 
