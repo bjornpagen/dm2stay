@@ -45,15 +45,15 @@ export const completed = inngest.createFunction(
     }
 
     const { items } = await client.dataset(datasetId).listItems()
-    const listingData = items[0] as unknown as Listing
-    if (!listingData) {
+    const listing = items[0] as unknown as Listing
+    if (!listing) {
       throw new Error("Listing data not found")
     }
 
     return {
       success: true,
       runId: actorRunId,
-      data: listingData
+      listing
     }
   }
 )
