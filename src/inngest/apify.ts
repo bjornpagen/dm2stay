@@ -2,6 +2,7 @@ import "server-only"
 import { ApifyClient } from "apify-client"
 import { env } from "@/env"
 import { inngest } from "@/inngest/client"
+import type { Listing } from "@/server/types"
 
 const client = new ApifyClient({ token: env.APIFY_API_TOKEN })
 const airbnbListingScraper = client.actor("PD6Eb2AlmsXqGxffs")
@@ -36,12 +37,23 @@ export const completed = inngest.createFunction(
     const { eventData } = event.data
     const { actorRunId } = eventData
 
-    const items = await client.dataset(actorRunId).listItems()
+    const list = await airbnbListingScraper.runs().list()
+    const run = list.items.find((run) => run.id === actorRunId)
+    const datasetId = run?.defaultDatasetId
+    if (!datasetId) {
+      throw new Error("Dataset ID not found")
+    }
+
+    const { items } = await client.dataset(datasetId).listItems()
+    const listingData = items[0] as unknown as Listing
+    if (!listingData) {
+      throw new Error("Listing data not found")
+    }
 
     return {
       success: true,
       runId: actorRunId,
-      results: items
+      listingData
     }
   }
 )
