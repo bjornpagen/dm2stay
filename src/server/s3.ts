@@ -1,4 +1,4 @@
-//import "server-only"
+import "server-only"
 
 import {
   S3Client,
@@ -13,6 +13,7 @@ import { createWriteStream } from "node:fs"
 import { pipeline } from "node:stream/promises"
 import type { Readable } from "node:stream"
 
+// TODO(bjornpagen): Move to env.js. We haven't done this because we're not even using S3 yet.
 if (
   !process.env.AWS_REGION ||
   !process.env.AWS_ACCESS_KEY_ID ||
