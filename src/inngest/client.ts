@@ -14,7 +14,7 @@ const events = {
   },
   "agent/message.generated": {
     data: z.object({
-      messageId: z.string()
+      messageIds: z.array(z.string())
     })
   },
   "apify/scrape.queued": {

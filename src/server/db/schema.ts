@@ -170,7 +170,7 @@ export const airbnbListing = schema.table("airbnb_listing", {
   airbnbUrl: text("airbnb_url")
     .notNull()
     .generatedAlwaysAs(sql`'https://www.airbnb.com/rooms/' || "airbnb_id"`),
-  data: jsonb("data").$type<ListingData>(),
+  data: jsonb("data").notNull().$type<ListingData>(),
   createdAt: timestamp("created_at", { withTimezone: false })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -306,7 +306,9 @@ export const message = schema.table(
     prospectId: text("prospect_id")
       .notNull()
       .references(() => prospect.id),
-    userId: text("user_id").references(() => user.id),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id),
     createdAt: timestamp("created_at", { withTimezone: false })
       .notNull()
       .$defaultFn(() => new Date()),
@@ -317,14 +319,6 @@ export const message = schema.table(
   },
   (table) => ({
     idLengthCheck: check("message_id_length", sql`length(${table.id}) = 24`),
-    userCheck: check(
-      "message_user_check",
-      sql`${table.type} <> 'user' OR ${table.userId} IS NOT NULL`
-    ),
-    aiCheck: check(
-      "message_ai_check",
-      sql`${table.type} <> 'ai' OR ${table.userId} IS NULL`
-    ),
     prospectIdIdx: index("message_prospect_id_idx").on(table.prospectId),
     userIdIdx: index("message_user_id_idx").on(table.userId),
     typeIdx: index("message_type_idx").on(table.type)
@@ -349,12 +343,11 @@ export const booking = schema.table(
     prospectId: text("prospect_id")
       .notNull()
       .references(() => prospect.id),
-    listingId: text("listing_id")
-      .notNull()
-      .references(() => listing.id),
+    listingId: text("listing_id").references(() => listing.id),
     checkIn: timestamp("check_in", { withTimezone: false }).notNull(),
     checkOut: timestamp("check_out", { withTimezone: false }).notNull(),
     stripePaymentIntentId: text("stripe_payment_intent_id"),
+    paymentAt: timestamp("payment_at", { withTimezone: false }),
     createdAt: timestamp("created_at", { withTimezone: false })
       .notNull()
       .$defaultFn(() => new Date()),
