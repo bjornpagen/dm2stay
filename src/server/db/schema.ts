@@ -204,6 +204,10 @@ export const listing = schema.table(
     priceCheck: check(
       "listing_price_check",
       sql`${table.defaultMonthlyPrice} <= ${table.defaultWeeklyPrice} * 4 AND ${table.defaultWeeklyPrice} <= ${table.defaultDailyPrice} * 7`
+    ),
+    userAirbnbIdx: uniqueIndex("listing_user_airbnb_idx").on(
+      table.userId,
+      table.airbnbId
     )
   })
 )
