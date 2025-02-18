@@ -11,6 +11,7 @@ export type DashboardProps = {
     id: string
     airbnbId: string | null
     airbnbData: ListingData | null
+    airbnbUrl: string | null
   }>
   importProperty: (url: string) => Promise<void>
 }
@@ -61,22 +62,36 @@ export function Dashboard({ listings, importProperty }: DashboardProps) {
               className="rounded-lg border p-4 hover:bg-accent/50"
             >
               <div className="space-y-2">
-                <div className="font-medium">
-                  {listing.airbnbData?.h1Title || "Loading property details..."}
-                </div>
-                <div className="text-sm text-muted-foreground">
-                  {listing.airbnbId
-                    ? `https://www.airbnb.com/rooms/${listing.airbnbId}`
-                    : "No Airbnb listing"}
-                </div>
-                {listing.airbnbData && (
-                  <div className="text-sm">
-                    <div>{listing.airbnbData.location.address}</div>
-                    <div>
-                      {listing.airbnbData.overview.propertyType} ·{" "}
-                      {listing.airbnbData.overview.capacity} guests
+                {listing.airbnbData ? (
+                  <React.Fragment>
+                    <div className="font-medium">
+                      {listing.airbnbData.h1Title}
                     </div>
-                  </div>
+                    <div className="text-sm text-muted-foreground">
+                      {listing.airbnbUrl}
+                    </div>
+                    <div className="text-sm">
+                      <div>{listing.airbnbData.location.address}</div>
+                      <div>
+                        {listing.airbnbData.overview.propertyType} ·{" "}
+                        {listing.airbnbData.overview.capacity} guests
+                      </div>
+                    </div>
+                  </React.Fragment>
+                ) : (
+                  <React.Fragment>
+                    <div className="font-medium">Property Details Loading</div>
+                    <div className="text-sm text-muted-foreground">
+                      {listing.airbnbId ? (
+                        <React.Fragment>
+                          <div>Fetching data from Airbnb...</div>
+                          <div>Check back in a few minutes</div>
+                        </React.Fragment>
+                      ) : (
+                        "No Airbnb listing connected"
+                      )}
+                    </div>
+                  </React.Fragment>
                 )}
               </div>
             </Link>

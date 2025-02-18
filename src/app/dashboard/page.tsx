@@ -62,7 +62,8 @@ async function DashboardContent() {
     .select({
       id: schema.listing.id,
       airbnbId: schema.listing.airbnbId,
-      airbnbData: schema.airbnbListing.data
+      airbnbData: schema.airbnbListing.data,
+      airbnbUrl: schema.airbnbListing.airbnbUrl
     })
     .from(schema.listing)
     .leftJoin(
