@@ -32,6 +32,7 @@ function Sparkline({ data, color, title }: { data: number[], color: string, titl
       preserveAspectRatio="none"
       aria-label={`${title} trend visualization`}
     >
+      <title>{`${title} trend visualization`}</title>
       <polyline
         points={points}
         fill="none"

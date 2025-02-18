@@ -77,12 +77,9 @@ const ChartStyle = ({ id, config }: { id: string; config: ChartConfig }) => {
     return null
   }
 
-  return (
-    <style
-      dangerouslySetInnerHTML={{
-        __html: Object.entries(THEMES)
-          .map(
-            ([theme, prefix]) => `
+  const styles = Object.entries(THEMES)
+    .map(
+      ([theme, prefix]) => `
 ${prefix} [data-chart=${id}] {
 ${colorConfig
   .map(([key, itemConfig]) => {
@@ -91,13 +88,15 @@ ${colorConfig
       itemConfig.color
     return color ? `  --color-${key}: ${color};` : null
   })
+  .filter(Boolean)
   .join("\n")}
 }
 `
-          )
-          .join("\n"),
-      }}
-    />
+    )
+    .join("\n")
+
+  return (
+    <style>{styles}</style>
   )
 }
 
@@ -139,9 +138,13 @@ const ChartTooltipContent = React.forwardRef<
         return null
       }
 
-      const [item] = payload
-      const key = `${labelKey || item.dataKey || item.name || "value"}`
-      const itemConfig = getPayloadConfigFromPayload(config, item, key)
+      const [firstItem] = payload
+      if (!firstItem) {
+        return null
+      }
+
+      const key = `${labelKey || firstItem.dataKey || firstItem.name || "value"}`
+      const itemConfig = getPayloadConfigFromPayload(config, firstItem, key)
       const value =
         !labelKey && typeof label === "string"
           ? config[label as keyof typeof config]?.label || label
