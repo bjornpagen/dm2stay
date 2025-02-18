@@ -38,10 +38,14 @@ actions:
 
          // Good: Using direct SQL queries
          const user = await db
-           .select()
+           .select({
+            id: schema.user.id,
+            email: schema.user.email
+           })
            .from(users)
            .where(eq(users.id, userId))
-           .limit(1);
+           .limit(1)
+           .then((result) => result[0]);
 
          // Bad: Using findMany
          const activeUsers = await db.query.users.findMany({
@@ -50,7 +54,10 @@ actions:
 
          // Good: Using direct SQL query
          const activeUsers = await db
-           .select()
+           .select({
+            id: schema.user.id,
+            email: schema.user.email
+           })
            .from(users)
            .where(eq(users.status, 'active'));
          ```
@@ -68,8 +75,8 @@ examples:
       const user = await db.query.users.findFirst();
 
       // Good: Using direct queries
-      const result = await db.select().from(users);
-      const user = await db.select().from(users).limit(1);
+      const result = await db.select({ id: schema.user.id, email: schema.user.email }).from(users);
+      const user = await db.select({ id: schema.user.id, email: schema.user.email }).from(users).limit(1);
     output: "Correctly using Drizzle queries"
 
 metadata:
