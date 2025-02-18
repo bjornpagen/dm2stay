@@ -257,7 +257,8 @@ export const prospectSource = schema.enum("prospect_source", [
   "instagram_dm",
   "tiktok_dm",
   "email",
-  "phone_call"
+  "phone_call",
+  "sms"
 ])
 
 export const prospect = schema.table(
