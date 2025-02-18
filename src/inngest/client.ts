@@ -32,6 +32,11 @@ const events = {
         actorRunId: z.string()
       })
     })
+  },
+  "test/message.send": {
+    data: z.object({
+      content: z.string()
+    })
   }
 }
 

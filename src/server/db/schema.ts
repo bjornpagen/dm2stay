@@ -253,14 +253,6 @@ export const listingRelations = relations(listing, ({ one, many }) => ({
   bookings: many(booking)
 }))
 
-export const prospectSource = schema.enum("prospect_source", [
-  "instagram_dm",
-  "tiktok_dm",
-  "email",
-  "phone_call",
-  "sms"
-])
-
 export const prospect = schema.table(
   "prospect",
   {
@@ -291,17 +283,21 @@ export const prospect = schema.table(
   })
 )
 
-export const messageType = schema.enum("message_type", [
-  "prospect",
+export const messageSource = schema.enum("message_source", [
   "ai",
-  "user"
+  "user",
+  "instagram_dm",
+  "tiktok_dm",
+  "email",
+  "sms",
+  "test"
 ])
 
 export const message = schema.table(
   "message",
   {
     id: text("id").primaryKey().notNull().$default(createId),
-    type: messageType("type").notNull(),
+    source: messageSource("source").notNull(),
     content: text("content").notNull(),
     prospectId: text("prospect_id")
       .notNull()
@@ -321,7 +317,7 @@ export const message = schema.table(
     idLengthCheck: check("message_id_length", sql`length(${table.id}) = 24`),
     prospectIdIdx: index("message_prospect_id_idx").on(table.prospectId),
     userIdIdx: index("message_user_id_idx").on(table.userId),
-    typeIdx: index("message_type_idx").on(table.type)
+    sourceIdx: index("message_source_idx").on(table.source)
   })
 )
 

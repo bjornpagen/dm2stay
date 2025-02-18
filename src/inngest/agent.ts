@@ -205,7 +205,7 @@ export const messageReceived = inngest.createFunction(
           .then((rows) => rows[0]),
         db
           .select({
-            type: schema.message.type,
+            source: schema.message.source,
             content: schema.message.content
           })
           .from(schema.message)
@@ -280,7 +280,13 @@ Respond in a friendly, natural manner, as in a real conversation. When needed, s
       },
       ...previousMessages.map((msg) => ({
         role:
-          msg.type === "prospect" ? ("user" as const) : ("assistant" as const),
+          msg.source === "instagram_dm" ||
+          msg.source === "tiktok_dm" ||
+          msg.source === "email" ||
+          msg.source === "sms" ||
+          msg.source === "test"
+            ? ("user" as const)
+            : ("assistant" as const),
         content: msg.content
       })),
       {
@@ -363,7 +369,7 @@ Respond in a friendly, natural manner, as in a real conversation. When needed, s
     await db.insert(schema.message).values(
       aiMessages.map((msg, i) => ({
         id: messageIds[i],
-        type: "ai" as const,
+        source: "ai" as const,
         content: msg.content,
         prospectId: message.prospectId,
         userId: message.userId
