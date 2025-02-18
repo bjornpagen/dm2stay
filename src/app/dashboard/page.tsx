@@ -1,17 +1,19 @@
 import { Building2, DollarSign, Percent, Star } from "lucide-react"
+import { Calendar } from "@/components/ui/calendar"
 import { StatsCard } from "@/components/dashboard/stats-card"
 import { RevenueChart } from "@/components/dashboard/revenue-chart"
 import { UpcomingCheckins } from "@/components/dashboard/upcoming-checkins"
 import { TopProperties } from "@/components/dashboard/top-properties"
 import { MaintenanceAlerts } from "@/components/dashboard/maintenance-alerts"
+import { Card } from "@/components/ui/card"
 
 const revenueData = [
-  { month: "Jan", revenue: 35000 },
-  { month: "Feb", revenue: 42000 },
-  { month: "Mar", revenue: 38000 },
-  { month: "Apr", revenue: 45000 },
-  { month: "May", revenue: 43000 },
-  { month: "Jun", revenue: 48560 },
+  { month: "Jan", revenue: 35000, fill: "hsl(var(--chart-1))" },
+  { month: "Feb", revenue: 42000, fill: "hsl(var(--chart-2))" },
+  { month: "Mar", revenue: 38000, fill: "hsl(var(--chart-3))" },
+  { month: "Apr", revenue: 45000, fill: "hsl(var(--chart-4))" },
+  { month: "May", revenue: 43000, fill: "hsl(var(--chart-5))" },
+  { month: "Jun", revenue: 48560, fill: "hsl(var(--chart-1))" },
 ]
 
 const upcomingCheckins = [
@@ -77,31 +79,35 @@ const stats = [
     title: "Total Listings",
     value: "12",
     change: { value: "+2.5%", trend: "up" as const },
-    icon: Building2
+    icon: Building2,
+    historicalData: [8, 9, 9, 10, 11, 11, 12]
   },
   {
     title: "Average Occupancy",
     value: "78%",
     change: { value: "+5.3%", trend: "up" as const },
-    icon: Percent
+    icon: Percent,
+    historicalData: [65, 68, 72, 70, 74, 76, 78]
   },
   {
     title: "Average Rating",
     value: "4.8",
     change: { value: "+0.2", trend: "up" as const },
-    icon: Star
+    icon: Star,
+    historicalData: [4.4, 4.5, 4.5, 4.6, 4.7, 4.7, 4.8]
   },
   {
     title: "Monthly Revenue",
     value: "$48,560",
     change: { value: "+8.4%", trend: "up" as const },
-    icon: DollarSign
+    icon: DollarSign,
+    historicalData: [38000, 40000, 42000, 43500, 45000, 47000, 48560]
   }
 ]
 
 export default function DashboardPage() {
   return (
-    <div className="flex-1 space-y-8 p-8">
+    <div className="flex flex-col space-y-8 p-8 w-full h-full">
       <div className="flex justify-between items-center">
         <h1 className="text-2xl font-semibold">Dashboard</h1>
         <div className="flex items-center gap-2 text-sm text-muted-foreground">
@@ -110,19 +116,26 @@ export default function DashboardPage() {
         </div>
       </div>
 
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-4">
         {stats.map((stat) => (
           <StatsCard key={stat.title} {...stat} />
         ))}
       </div>
 
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
-        <RevenueChart data={revenueData} />
-        <UpcomingCheckins checkins={upcomingCheckins} />
+      <div className="grid gap-4 grid-cols-5">
+        <div className="col-span-3">
+          <RevenueChart data={revenueData} />
+        </div>
+        <div className="col-span-2">
+          <Card className="h-full p-4">
+            <Calendar  />
+          </Card>
+        </div>
       </div>
 
-      <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
+      <div className="grid gap-4 grid-cols-3">
         <TopProperties properties={topProperties} />
+        <UpcomingCheckins checkins={upcomingCheckins} />
         <MaintenanceAlerts alerts={maintenanceAlerts} />
       </div>
     </div>

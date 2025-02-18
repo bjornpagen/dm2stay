@@ -18,9 +18,9 @@ export default async function RootLayout({
     <html lang="en">
       <body>
         <SidebarProvider>
-          <div className="flex min-h-screen">
+          <div className="flex h-full w-full">
             <DashboardSidebar />
-            <main className="flex-1 p-6">
+            <main className="flex-1">
               {children}
             </main>
           </div>
