@@ -7,6 +7,7 @@ type BookingInfo = Omit<
   "id" | "stripePaymentIntentId"
 >
 type ListingInfo = {
+  id: string
   defaultDailyPrice: number | null
   defaultWeeklyPrice: number | null
   defaultMonthlyPrice: number | null
@@ -68,6 +69,7 @@ ${listings
   .map(
     (listing) => `
 Property Information:
+ID: ${listing.id}
 ${JSON.stringify(listing.airbnbData)}
 Pricing Information:
 - Daily Price: ${listing.defaultDailyPrice ? `$${listing.defaultDailyPrice / 100}` : "Not set"}

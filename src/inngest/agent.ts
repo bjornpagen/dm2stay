@@ -218,6 +218,7 @@ export const messageReceived = inngest.createFunction(
           .orderBy(desc(schema.message.createdAt)),
         db
           .select({
+            id: schema.listing.id,
             defaultDailyPrice: schema.listing.defaultDailyPrice,
             defaultWeeklyPrice: schema.listing.defaultWeeklyPrice,
             defaultMonthlyPrice: schema.listing.defaultMonthlyPrice,
