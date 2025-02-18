@@ -14,7 +14,8 @@ export const env = createEnv({
     BETTER_AUTH_SECRET: z.string(),
     VERCEL_URL: z.string().optional(),
     APIFY_API_TOKEN: z.string(),
-    APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL: z.string().url()
+    APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL: z.string().url(),
+    POSTMARK_API_KEY: z.string()
   },
 
   /**
@@ -35,7 +36,8 @@ export const env = createEnv({
     VERCEL_URL: process.env.VERCEL_URL,
     APIFY_API_TOKEN: process.env.APIFY_API_TOKEN,
     APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL:
-      process.env.APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL
+      process.env.APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL,
+    POSTMARK_API_KEY: process.env.POSTMARK_API_KEY
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
