@@ -37,6 +37,7 @@ actions:
          - Use Tailwind v4 for all styling needs
          - Follow Tailwind's utility-first approach
          - Utilize Tailwind's built-in design system
+         - Use theme colors for everything
 
 examples:
   - input: |

@@ -188,9 +188,9 @@ export const listing = schema.table(
       .notNull()
       .references(() => user.id),
     airbnbId: text("airbnb_id").references(() => airbnbListing.airbnbId),
-    dailyPrice: integer("daily_price"),
-    weeklyPrice: integer("weekly_price"),
-    monthlyPrice: integer("monthly_price"),
+    defaultDailyPrice: integer("default_daily_price"),
+    defaultWeeklyPrice: integer("default_weekly_price"),
+    defaultMonthlyPrice: integer("default_monthly_price"),
     createdAt: timestamp("created_at", { withTimezone: false })
       .notNull()
       .$defaultFn(() => new Date()),
@@ -203,7 +203,7 @@ export const listing = schema.table(
     idLengthCheck: check("listing_id_length", sql`length(${table.id}) = 24`),
     priceCheck: check(
       "listing_price_check",
-      sql`${table.monthlyPrice} <= ${table.weeklyPrice} * 4 AND ${table.weeklyPrice} <= ${table.dailyPrice} * 7`
+      sql`${table.defaultMonthlyPrice} <= ${table.defaultWeeklyPrice} * 4 AND ${table.defaultWeeklyPrice} <= ${table.defaultDailyPrice} * 7`
     ),
     userAirbnbIdx: uniqueIndex("listing_user_airbnb_idx").on(
       table.userId,
