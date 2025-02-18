@@ -26,9 +26,9 @@ export function DashboardSidebar() {
       href: "/dashboard",
     },
     {
-      title: "Properties",
+      title: "Listings",
       icon: Home,
-      href: "/properties",
+      href: "/listings",
     },
     {
       title: "Reservations",

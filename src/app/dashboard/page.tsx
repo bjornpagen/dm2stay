@@ -103,7 +103,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         <Card className="p-6">
           <div className="flex justify-between items-center mb-4">
-            <h3 className="text-sm font-medium text-muted-foreground">Total Properties</h3>
+            <h3 className="text-sm font-medium text-muted-foreground">Total Listings</h3>
             <Building2 className="h-5 w-5 text-muted-foreground" />
           </div>
           <div>
@@ -236,7 +236,7 @@ export default function DashboardPage() {
       <div className="grid gap-4 grid-cols-1 md:grid-cols-2">
         <Card className="p-6">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-lg font-semibold">Top Performing Properties</h3>
+            <h3 className="text-lg font-semibold">Top Performing Listings</h3>
             <ArrowUpRight className="h-5 w-5 text-muted-foreground" />
           </div>
           <div className="space-y-4">
