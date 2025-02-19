@@ -16,16 +16,21 @@ export function MaintenanceAlerts({ alerts }: { alerts: Alert[] }) {
       </div>
       <div className="space-y-4">
         {alerts.map((alert) => (
-          <div key={alert.issue} className="flex items-center justify-between border-b pb-4 last:border-0">
+          <div
+            key={alert.issue}
+            className="flex items-center justify-between border-b pb-4 last:border-0"
+          >
             <div>
               <p className="font-medium">{alert.property}</p>
               <p className="text-sm text-muted-foreground">{alert.issue}</p>
             </div>
-            <span className={`px-2 py-1 rounded-full text-xs font-medium ${
-              alert.priority === "High" 
-                ? "bg-destructive/20 text-destructive" 
-                : "bg-muted text-muted-foreground"
-            }`}>
+            <span
+              className={`px-2 py-1 rounded-full text-xs font-medium ${
+                alert.priority === "High"
+                  ? "bg-destructive/20 text-destructive"
+                  : "bg-muted text-muted-foreground"
+              }`}
+            >
               {alert.priority}
             </span>
           </div>
@@ -33,4 +38,4 @@ export function MaintenanceAlerts({ alerts }: { alerts: Alert[] }) {
       </div>
     </Card>
   )
-} 
+}
