@@ -3,7 +3,6 @@ import { db } from "@/server/db"
 import { desc, eq, and, sql, notInArray } from "drizzle-orm"
 import * as schema from "@/server/db/schema"
 import { getUserId } from "@/server/auth"
-import { callWithAwaited } from "@/lib/utils"
 
 import { Conversations } from "@/components/conversations-page"
 
@@ -49,11 +48,14 @@ const getConversations = db
   .orderBy(desc(schema.message.createdAt))
   .prepare("get_conversations")
 
+export type Conversation = Awaited<
+  ReturnType<typeof getConversations.execute>
+>[number]
+
 export default function Page() {
   const userId = getUserId()
-  const conversations = callWithAwaited(
-    getConversations.execute.bind(getConversations),
-    userId.then((userId) => ({ userId }))
+  const conversations = userId.then((userId) =>
+    getConversations.execute({ userId })
   )
 
   return (

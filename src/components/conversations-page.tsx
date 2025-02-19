@@ -2,16 +2,12 @@
 
 import React from "react"
 import Masonry from "react-masonry-css"
-import { ConversationCard } from "@/components/conversation-card"
-import { SearchBar } from "@/components/search-bar"
 import { Search } from "lucide-react"
 
-interface ParsedConversation {
-  id: string
-  customerName: string
-  latestMessage: string
-  timestamp: Date
-}
+import { ConversationCard } from "@/components/conversation-card"
+import { SearchBar } from "@/components/search-bar"
+
+import type { Conversation } from "@/app/(dashboard)/conversations/page"
 
 const MASONRY_BREAKPOINTS = {
   default: 6,
@@ -24,7 +20,7 @@ const MASONRY_BREAKPOINTS = {
 }
 
 export function Conversations(props: {
-  conversations: Promise<ParsedConversation[]>
+  conversations: Promise<Conversation[]>
 }) {
   const conversations = React.use(props.conversations)
   const [searchTerm, setSearchTerm] = React.useState("")

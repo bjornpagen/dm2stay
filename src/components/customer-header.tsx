@@ -5,10 +5,25 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Calendar, MapPin, Phone, Mail, Clock, CreditCard } from "lucide-react"
-import type { CustomerProfile } from "@/types/customer"
+import type { Customer } from "@/app/(dashboard)/customers/[id]/page"
 
-export function CustomerHeader(params: { customer: Promise<CustomerProfile> }) {
+export function CustomerHeader(params: {
+  customer: Promise<Customer>
+}) {
   const customer = React.use(params.customer)
+
+  const dummyData = {
+    avatar: "/avatar.jpg",
+    location: "New York, USA",
+    verificationStatus: {
+      email: true,
+      phone: true,
+      government_id: false
+    },
+    joinDate: customer.createdAt,
+    totalSpent: 15000,
+    lastActive: new Date()
+  }
 
   return (
     <Card className="shadow-lg">
@@ -18,29 +33,31 @@ export function CustomerHeader(params: { customer: Promise<CustomerProfile> }) {
       <CardContent className="grid gap-6">
         <div className="flex items-center space-x-4">
           <Avatar className="h-20 w-20">
-            <AvatarImage src={customer.avatar} alt={customer.name} />
-            <AvatarFallback>{customer.name.charAt(0)}</AvatarFallback>
+            <AvatarImage src={dummyData.avatar} alt={customer.name ?? ""} />
+            <AvatarFallback>
+              {(customer.name?.[0] ?? "").toUpperCase()}
+            </AvatarFallback>
           </Avatar>
           <div>
             <h2 className="text-2xl font-bold">{customer.name}</h2>
-            {customer.location && (
+            {dummyData.location && (
               <div className="flex items-center mt-1 text-sm text-muted-foreground">
                 <MapPin className="h-4 w-4 mr-1" />
-                <span>{customer.location}</span>
+                <span>{dummyData.location}</span>
               </div>
             )}
             <div className="flex flex-wrap gap-2 mt-2">
-              {customer.verificationStatus.email && (
+              {dummyData.verificationStatus.email && (
                 <Badge variant="secondary" className="text-xs">
                   Email Verified
                 </Badge>
               )}
-              {customer.verificationStatus.phone && (
+              {dummyData.verificationStatus.phone && (
                 <Badge variant="secondary" className="text-xs">
                   Phone Verified
                 </Badge>
               )}
-              {customer.verificationStatus.government_id && (
+              {dummyData.verificationStatus.government_id && (
                 <Badge variant="secondary" className="text-xs">
                   ID Verified
                 </Badge>
@@ -56,7 +73,7 @@ export function CustomerHeader(params: { customer: Promise<CustomerProfile> }) {
               <div>
                 <p className="text-sm font-medium">Member Since</p>
                 <p className="text-lg font-bold">
-                  {customer.joinDate.toLocaleDateString()}
+                  {dummyData.joinDate.toLocaleDateString()}
                 </p>
               </div>
             </CardContent>
@@ -67,7 +84,7 @@ export function CustomerHeader(params: { customer: Promise<CustomerProfile> }) {
               <div>
                 <p className="text-sm font-medium">Total Spent</p>
                 <p className="text-lg font-bold">
-                  ${customer.totalSpent.toLocaleString()}
+                  ${dummyData.totalSpent.toLocaleString()}
                 </p>
               </div>
             </CardContent>
@@ -96,7 +113,7 @@ export function CustomerHeader(params: { customer: Promise<CustomerProfile> }) {
 
         <div className="flex items-center text-sm text-muted-foreground">
           <Clock className="h-4 w-4 mr-2" />
-          <span>Last active {customer.lastActive.toLocaleDateString()}</span>
+          <span>Last active {dummyData.lastActive.toLocaleDateString()}</span>
         </div>
       </CardContent>
     </Card>

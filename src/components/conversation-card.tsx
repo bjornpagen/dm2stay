@@ -2,19 +2,14 @@ import Link from "next/link"
 import { Card, CardContent } from "@/components/ui/card"
 import { formatTimestamp } from "@/lib/utils"
 
-interface ConversationCardProps {
-  id: string
-  customerName: string
-  latestMessage: string
-  timestamp: Date
-}
+import type { Conversation } from "@/app/(dashboard)/conversations/page"
 
 export function ConversationCard({
   id,
   customerName,
   latestMessage,
   timestamp
-}: ConversationCardProps) {
+}: Conversation) {
   return (
     <Link href={`/customers/${id}`}>
       <Card className="mb-4 cursor-pointer hover:shadow-md transition-all duration-150">

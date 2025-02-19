@@ -54,19 +54,3 @@ export function formatTimestamp(date: Date): string {
 
   return date.toLocaleDateString()
 }
-
-export async function extractPromiseField<T, K extends keyof T>(
-  v: Promise<T>,
-  field: K
-): Promise<T[K]> {
-  const data = await v
-  return data[field]
-}
-
-export async function callWithAwaited<TArgs extends unknown[], TResult>(
-  fn: (...args: TArgs) => Promise<TResult>,
-  ...promiseArgs: { [K in keyof TArgs]: Promise<TArgs[K]> }
-): Promise<TResult> {
-  const resolvedArgs = await Promise.all(promiseArgs)
-  return fn(...resolvedArgs)
-}

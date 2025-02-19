@@ -13,7 +13,8 @@ import {
   DropdownMenuTrigger
 } from "@/components/ui/dropdown-menu"
 import { Mail, Send, MessageSquare, Instagram } from "lucide-react"
-import type { Message } from "@/types/customer"
+
+import type { Message } from "@/app/(dashboard)/customers/[id]/page"
 
 const TikTokIcon = ({ color = "#000000" }) => {
   return (
@@ -35,24 +36,29 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
   const [messages, setMessages] = useState(initialMessages)
   const [newMessage, setNewMessage] = useState("")
   const [sendMethod, setSendMethod] = useState<
-    "email" | "sms" | "instagram" | "tiktok"
+    "email" | "sms" | "instagram_dm" | "tiktok_dm"
   >("email")
+
+  const dummyData = {
+    sender: {
+      type: "host" as const,
+      name: "You",
+      avatar: "/host-avatar.jpg"
+    }
+  }
 
   const handleSend = () => {
     if (!newMessage.trim()) {
       return
     }
-    const newMessageObj: Message = {
-      id: messages.length + 1,
+
+    const newMessageObj = {
+      id: String(Date.now()),
       content: newMessage,
-      timestamp: new Date(),
-      sender: {
-        type: "host",
-        name: "You",
-        avatar: "/host-avatar.jpg"
-      },
-      source: sendMethod
+      source: sendMethod,
+      createdAt: new Date()
     }
+
     setMessages([...messages, newMessageObj])
     setNewMessage("")
   }
@@ -64,23 +70,27 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
     }
   }
 
-  const getMessageStyles = (type: "guest" | "host" | "ai") => {
+  const getMessageStyles = (source: Message["source"]) => {
     const baseStyles = "max-w-[80%] rounded-lg px-4 py-2 shadow-sm"
-    switch (type) {
-      case "guest":
-        return `${baseStyles} bg-background border border-border self-start`
-      case "host":
+    switch (source) {
+      case "user":
         return `${baseStyles} bg-primary text-primary-foreground self-end`
       case "ai":
         return `${baseStyles} bg-secondary self-end`
+      default:
+        return `${baseStyles} bg-background border border-border self-start`
     }
   }
 
   const sendMethodIcons = {
     email: <Mail className="h-4 w-4" />,
     sms: <MessageSquare className="h-4 w-4" />,
-    instagram: <Instagram className="h-4 w-4" />,
-    tiktok: <TikTokIcon color="currentColor" />
+    instagram_dm: <Instagram className="h-4 w-4" />,
+    tiktok_dm: (
+      <div className="h-4 w-4">
+        <TikTokIcon color="currentColor" />
+      </div>
+    )
   }
 
   return (
@@ -93,51 +103,29 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
           {messages.map((message) => (
             <div key={message.id} className="space-y-2">
               <div
-                className={`flex items-center gap-2 ${message.sender.type !== "guest" ? "justify-end" : ""}`}
+                className={`flex items-center gap-2 ${message.source === "user" ? "justify-end" : ""}`}
               >
-                {message.sender.type === "guest" && (
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src={message.sender.avatar} />
-                    <AvatarFallback>
-                      {message.sender.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
+                <Avatar className="h-6 w-6">
+                  <AvatarImage src={dummyData.sender.avatar} />
+                  <AvatarFallback>
+                    {dummyData.sender.name.charAt(0)}
+                  </AvatarFallback>
+                </Avatar>
                 <span className="text-sm font-medium">
-                  {message.sender.name}
+                  {dummyData.sender.name}
                 </span>
-                {message.sender.type !== "guest" && (
-                  <Avatar className="h-6 w-6">
-                    <AvatarImage src={message.sender.avatar} />
-                    <AvatarFallback>
-                      {message.sender.type === "ai"
-                        ? "AI"
-                        : message.sender.name.charAt(0)}
-                    </AvatarFallback>
-                  </Avatar>
-                )}
               </div>
               <div className="flex flex-col">
-                <div className={getMessageStyles(message.sender.type)}>
+                <div className={getMessageStyles(message.source)}>
                   <p className="text-sm whitespace-pre-wrap">
                     {message.content}
                   </p>
                 </div>
                 <div
-                  className={`flex items-center gap-2 mt-1 ${
-                    message.sender.type !== "guest"
-                      ? "justify-end"
-                      : "justify-start"
-                  }`}
+                  className={`flex items-center gap-2 mt-1 ${message.source === "user" ? "justify-end" : "justify-start"}`}
                 >
                   <span className="text-xs text-muted-foreground">
-                    {message.timestamp.toLocaleString([], {
-                      year: "numeric",
-                      month: "short",
-                      day: "numeric",
-                      hour: "2-digit",
-                      minute: "2-digit"
-                    })}
+                    {message.createdAt.toLocaleString()}
                   </span>
                   <span className="text-xs text-muted-foreground">•</span>
                   <span className="text-xs text-muted-foreground capitalize flex items-center gap-1">
@@ -178,11 +166,11 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
                   <MessageSquare className="mr-2 h-4 w-4" />
                   <span>SMS</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSendMethod("instagram")}>
+                <DropdownMenuItem onClick={() => setSendMethod("instagram_dm")}>
                   <Instagram className="mr-2 h-4 w-4" />
                   <span>Instagram</span>
                 </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSendMethod("tiktok")}>
+                <DropdownMenuItem onClick={() => setSendMethod("tiktok_dm")}>
                   <div className="mr-2 h-4 w-4">
                     <TikTokIcon color="currentColor" />
                   </div>
