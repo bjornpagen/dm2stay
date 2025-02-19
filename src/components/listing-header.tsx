@@ -1,20 +1,26 @@
 "use client"
-
 import { useState } from "react"
-import type { Overview } from "@/types/listing"
+import type { ListingData } from "@/server/types"
 import { Badge } from "@/components/ui/badge"
 import { Star, Users, Bed, Bath, DollarSign } from "lucide-react"
 import { ListingPriceEditor } from "@/components/listing-price-editor"
 
-export function ListingHeader({ overview }: { overview: Overview }) {
-  const [pricing, setPricing] = useState(overview.pricing)
+interface ListingHeaderProps {
+  overview: ListingData["overview"]
+}
+
+export function ListingHeader({ overview }: ListingHeaderProps) {
+  const [pricing, setPricing] = useState({
+    perNight: 0,
+    perWeek: 0,
+    perMonth: 0
+  })
 
   const handlePriceUpdate = async (newPrices: {
     perNight: number
     perWeek: number
     perMonth: number
   }) => {
-    // TODO: Implement API call to update prices
     console.log("Updating prices:", newPrices)
     setPricing(newPrices)
   }

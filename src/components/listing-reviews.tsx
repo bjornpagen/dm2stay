@@ -1,9 +1,11 @@
-import type { Review } from "@/types/listing"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Star } from "lucide-react"
+import type { ListingData } from "@/server/types"
 
-export function ListingReviews({ reviews }: { reviews: Review[] }) {
+export function ListingReviews({
+  reviews
+}: { reviews: ListingData["reviews"] }) {
   return (
     <Card>
       <CardHeader>

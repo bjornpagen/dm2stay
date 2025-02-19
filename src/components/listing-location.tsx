@@ -1,8 +1,10 @@
-import type { Location } from "@/types/listing"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { MapPin } from "lucide-react"
+import type { ListingData } from "@/server/types"
 
-export function ListingLocation({ location }: { location: Location }) {
+export function ListingLocation({
+  location
+}: { location: ListingData["location"] }) {
   return (
     <Card>
       <CardHeader>

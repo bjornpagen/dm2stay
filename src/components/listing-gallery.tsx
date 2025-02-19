@@ -1,12 +1,14 @@
 "use client"
 
 import { useState } from "react"
-import type { Gallery } from "@/types/listing"
 import Image from "next/image"
 import { Dialog, DialogContent } from "@/components/ui/dialog"
 import { X, ChevronLeft, ChevronRight } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { cn } from "@/lib/utils"
+
+import type { ListingData } from "@/server/types"
+type Gallery = ListingData["gallery"]
 
 export function ListingGallery({ gallery }: { gallery: Gallery }) {
   const [selectedImage, setSelectedImage] = useState<string | null>(null)
@@ -20,12 +22,12 @@ export function ListingGallery({ gallery }: { gallery: Gallery }) {
       <div className="relative px-6 -mx-6">
         <div className="overflow-x-auto pb-4 hide-scrollbar">
           <div className="flex gap-4 w-max">
-            {images.map((image, index) => (
+            {images.map((image) => (
               <div
-                key={index}
+                key={image.src}
                 className={cn(
                   imageClassName,
-                  index === 0 ? "w-[600px]" : "w-[300px]"
+                  image.orientation === "LANDSCAPE" ? "w-[600px]" : "w-[300px]"
                 )}
                 onClick={() => setSelectedImage(image.src)}
               >

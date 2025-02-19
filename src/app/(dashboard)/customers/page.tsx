@@ -1,6 +1,6 @@
 import * as React from "react"
 import { db } from "@/server/db"
-import { desc, eq, sql, and } from "drizzle-orm"
+import { desc, eq, sql, and, count, isNotNull } from "drizzle-orm"
 import * as schema from "@/server/db/schema"
 import { CustomersPage } from "@/components/customers-page"
 import { getUserId } from "@/server/auth"
@@ -18,15 +18,7 @@ const getCustomers = db
       ) THEN 'active'::text
       ELSE 'inactive'::text
     END`,
-    totalBookings: sql<number>`COALESCE(
-      (
-        SELECT COUNT(*)
-        FROM ${schema.booking}
-        WHERE ${schema.booking.prospectId} = ${schema.prospect.id}
-        AND ${schema.booking.paymentAt} IS NOT NULL
-      ),
-      0
-    )`,
+    totalBookings: count(schema.booking.id),
     totalSpent: sql<number>`0`,
     lastActive: sql<Date>`MAX(${schema.message.createdAt})`
   })
@@ -36,6 +28,13 @@ const getCustomers = db
     and(
       eq(schema.message.prospectId, schema.prospect.id),
       eq(schema.message.userId, sql.placeholder("userId"))
+    )
+  )
+  .leftJoin(
+    schema.booking,
+    and(
+      eq(schema.booking.prospectId, schema.prospect.id),
+      isNotNull(schema.booking.paymentAt)
     )
   )
   .groupBy(schema.prospect.id)

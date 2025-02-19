@@ -1,8 +1,8 @@
-import type { Description } from "@/types/listing"
+import type { ListingData } from "@/server/types"
 
 export function ListingDescription({
   description
-}: { description: Description }) {
+}: { description: ListingData["description"] }) {
   return (
     <div className="space-y-4">
       <h2 className="text-2xl font-semibold">{description.title}</h2>

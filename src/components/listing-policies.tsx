@@ -1,4 +1,3 @@
-import type { Policies } from "@/types/listing"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import {
   Accordion,
@@ -6,8 +5,11 @@ import {
   AccordionItem,
   AccordionTrigger
 } from "@/components/ui/accordion"
+import type { ListingData } from "@/server/types"
 
-export function ListingPolicies({ policies }: { policies: Policies }) {
+export function ListingPolicies({
+  policies
+}: { policies: ListingData["policies"] }) {
   return (
     <Card>
       <CardHeader>
