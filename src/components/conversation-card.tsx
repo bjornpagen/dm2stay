@@ -1,5 +1,5 @@
 import Link from "next/link"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
+import { Card, CardContent } from "@/components/ui/card"
 import { formatTimestamp } from "@/lib/utils"
 
 interface ConversationCardProps {
@@ -17,18 +17,16 @@ export function ConversationCard({
 }: ConversationCardProps) {
   return (
     <Link href={`/customers/${id}`}>
-      <Card className="hover:bg-accent transition-all duration-150 ease-in-out hover:scale-[1.01] hover:shadow-md">
-        <CardHeader className="pb-2">
-          <CardTitle className="text-base font-medium">
-            {customerName}
-          </CardTitle>
-        </CardHeader>
-        <CardContent>
-          <p className="text-sm text-muted-foreground line-clamp-2 mb-2">
+      <Card className="mb-4 cursor-pointer hover:shadow-md transition-all duration-150">
+        <CardContent className="flex flex-col p-4 space-y-1">
+          <div className="flex justify-between items-start">
+            <p className="text-sm font-medium">{customerName}</p>
+            <p className="text-xs text-muted-foreground">
+              {formatTimestamp(timestamp)}
+            </p>
+          </div>
+          <p className="text-sm text-muted-foreground line-clamp-2">
             {latestMessage}
-          </p>
-          <p className="text-xs text-muted-foreground text-right">
-            {formatTimestamp(timestamp)}
           </p>
         </CardContent>
       </Card>

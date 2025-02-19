@@ -1,6 +1,7 @@
 "use client"
 
-import { useState, useLayoutEffect } from "react"
+import React from "react"
+import Masonry from "react-masonry-css"
 import { ConversationCard } from "@/components/conversation-card"
 import { SearchBar } from "@/components/search-bar"
 import { Search } from "lucide-react"
@@ -95,13 +96,23 @@ const mockConversations: RawConversation[] = [
   }
 ]
 
+const MASONRY_BREAKPOINTS = {
+  default: 6,
+  1920: 6,
+  1536: 5,
+  1280: 4,
+  1024: 3,
+  768: 2,
+  640: 1
+}
+
 export default function ConversationsPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [parsedConversations, setParsedConversations] = useState<
+  const [searchTerm, setSearchTerm] = React.useState("")
+  const [parsedConversations, setParsedConversations] = React.useState<
     ParsedConversation[]
   >([])
 
-  useLayoutEffect(() => {
+  React.useLayoutEffect(() => {
     // Parse dates on the client side
     setParsedConversations(
       mockConversations.map((conv) => ({
@@ -132,11 +143,15 @@ export default function ConversationsPage() {
           icon={<Search size={20} />}
         />
       </div>
-      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+      <Masonry
+        breakpointCols={MASONRY_BREAKPOINTS}
+        className="flex w-auto -ml-4"
+        columnClassName="pl-4 bg-clip-padding"
+      >
         {filteredConversations.map((conversation) => (
           <ConversationCard key={conversation.id} {...conversation} />
         ))}
-      </div>
+      </Masonry>
     </div>
   )
 }
