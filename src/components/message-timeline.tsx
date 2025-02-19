@@ -63,14 +63,15 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
   }
 
   const getMessageStyles = (source: Message["source"]) => {
-    const baseStyles = "max-w-md rounded-lg px-4 py-2 shadow-sm"
+    const baseStyles =
+      "max-w-md rounded-xl px-4 py-2.5 shadow-sm transition-colors"
     switch (source) {
       case "user":
         return cn(baseStyles, "bg-primary text-primary-foreground ml-auto")
       case "ai":
-        return cn(baseStyles, "bg-secondary ml-auto")
+        return cn(baseStyles, "bg-secondary/80 hover:bg-secondary ml-auto")
       default:
-        return cn(baseStyles, "bg-background border border-border")
+        return cn(baseStyles, "bg-card hover:bg-muted/50 border border-border")
     }
   }
 
@@ -82,35 +83,35 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
 
   return (
     <Card className="h-[600px] flex flex-col">
-      <CardHeader>
+      <CardHeader className="border-b">
         <CardTitle>Conversation History</CardTitle>
       </CardHeader>
-      <CardContent className="flex-grow overflow-hidden flex flex-col">
-        <div className="relative flex-grow overflow-y-auto mb-2 space-y-4 sm:space-y-6 px-1 h-[calc(100%-140px)]">
+      <CardContent className="flex-grow overflow-hidden flex flex-col p-0">
+        <div className="relative flex-grow overflow-y-auto space-y-6 px-4 py-4 h-[calc(100%-140px)] scroll-smooth">
           {messages.map((message) => (
-            <div key={message.id} className="flex flex-col">
+            <div key={message.id} className="flex flex-col group">
               <div className={getMessageStyles(message.source)}>
-                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
+                <p className="text-sm leading-relaxed whitespace-pre-wrap">
+                  {message.content}
+                </p>
               </div>
               <div
                 className={cn(
-                  "flex items-center gap-2 mt-1",
+                  "flex items-center gap-2 mt-1.5 text-xs text-muted-foreground/80 group-hover:text-muted-foreground transition-colors",
                   getMessageAlignment(message.source)
                 )}
               >
-                <span className="text-xs text-muted-foreground">
-                  {message.createdAt.toLocaleString()}
-                </span>
-                <span className="text-xs text-muted-foreground">•</span>
-                <span className="text-xs text-muted-foreground capitalize flex items-center gap-1">
+                <span>{message.createdAt.toLocaleString()}</span>
+                <span>•</span>
+                <span className="capitalize flex items-center gap-1">
                   {message.source.replace("_", " ")}
                 </span>
               </div>
             </div>
           ))}
         </div>
-        <div className="flex flex-col gap-2">
-          <div className="flex gap-1">
+        <div className="flex flex-col gap-3 p-4 border-t bg-card/50">
+          <div className="flex gap-1.5">
             <TooltipProvider>
               <Tooltip>
                 <TooltipTrigger asChild>
@@ -123,7 +124,7 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
                     <Mail className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top">
                   <p>Send via Email</p>
                 </TooltipContent>
               </Tooltip>
@@ -138,7 +139,7 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
                     <MessageSquare className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top">
                   <p>Send via SMS</p>
                 </TooltipContent>
               </Tooltip>
@@ -155,7 +156,7 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
                     <Instagram className="h-4 w-4" />
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top">
                   <p>Send via Instagram DM</p>
                 </TooltipContent>
               </Tooltip>
@@ -172,7 +173,7 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
                     </div>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top">
                   <p>Send via TikTok DM</p>
                 </TooltipContent>
               </Tooltip>
@@ -184,7 +185,7 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="min-h-[80px] resize-none pr-12"
+              className="min-h-[80px] resize-none pr-12 focus-visible:ring-1"
             />
             <TooltipProvider>
               <Tooltip>
@@ -192,13 +193,13 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
                   <Button
                     onClick={handleSend}
                     size="icon"
-                    className="absolute bottom-2 right-2 h-8 w-8"
+                    className="absolute bottom-2 right-2 h-8 w-8 transition-transform hover:scale-105 active:scale-95"
                   >
                     <Send className="h-4 w-4" />
                     <span className="sr-only">Send message</span>
                   </Button>
                 </TooltipTrigger>
-                <TooltipContent>
+                <TooltipContent side="top">
                   <p>Send message (Enter)</p>
                 </TooltipContent>
               </Tooltip>
