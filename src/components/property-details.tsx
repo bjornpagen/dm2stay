@@ -1,15 +1,8 @@
 import Image from "next/image"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, Users, Wifi, PocketIcon as Pool, UtensilsCrossed, Wind, Mountain } from "lucide-react"
+import { Calendar, Users } from "lucide-react"
 import { Badge } from "@/components/ui/badge"
-
-const amenityIcons: Record<string, any> = {
-  "Wi-Fi": Wifi,
-  Pool: Pool,
-  Kitchen: UtensilsCrossed,
-  "Air conditioning": Wind,
-  "Mountain view": Mountain,
-}
+import { getAmenityIcon } from "@/lib/amenity-icons"
 
 interface PropertyDetailsProps {
   property: {
@@ -50,7 +43,9 @@ export function PropertyDetails({ property, booking }: PropertyDetailsProps) {
             <Calendar className="h-4 w-4" />
             <span className="text-sm">
               {booking.checkIn && booking.checkOut
-                ? `${new Date(booking.checkIn).toLocaleDateString()} - ${new Date(booking.checkOut).toLocaleDateString()}`
+                ? `${new Date(booking.checkIn).toLocaleDateString()} - ${new Date(
+                    booking.checkOut
+                  ).toLocaleDateString()}`
                 : "No dates selected"}
             </span>
           </div>
@@ -63,11 +58,15 @@ export function PropertyDetails({ property, booking }: PropertyDetailsProps) {
           <p className="text-sm font-medium mb-2">Amenities</p>
           <div className="flex flex-wrap gap-2">
             {property.amenities.map((amenity) => {
-              const Icon = amenityIcons[amenity] || Mountain
+              const Icon = getAmenityIcon(amenity)
               return (
-                <Badge key={amenity} variant="secondary" className="flex items-center gap-1">
-                  <Icon className="h-3 w-3" />
-                  {amenity}
+                <Badge
+                  key={amenity}
+                  variant="secondary"
+                  className="flex gap-1.5"
+                >
+                  <Icon className="h-3.5 w-3.5" />
+                  <span>{amenity}</span>
                 </Badge>
               )
             })}
@@ -77,4 +76,3 @@ export function PropertyDetails({ property, booking }: PropertyDetailsProps) {
     </Card>
   )
 }
-

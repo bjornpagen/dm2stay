@@ -10,9 +10,26 @@ import * as z from "zod"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form"
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage
+} from "@/components/ui/form"
 import { Textarea } from "@/components/ui/textarea"
-import { CreditCard, Calendar, Lock, User, Mail, Loader2, CheckCircle2, AlertCircle, Users } from "lucide-react"
+import {
+  CreditCard,
+  Calendar,
+  Lock,
+  User,
+  Mail,
+  Loader2,
+  CheckCircle2,
+  AlertCircle,
+  Users
+} from "lucide-react"
 import { cn } from "@/lib/utils"
 import { DatePicker } from "@/components/ui/date-picker"
 import React from "react"
@@ -50,10 +67,16 @@ const formSchema = z
       }, "Invalid card number"),
     expiryDate: z
       .string()
-      .regex(/^(0[1-9]|1[0-2])\/([0-9]{2})$/, "Invalid expiry date format (MM/YY)")
+      .regex(
+        /^(0[1-9]|1[0-2])\/([0-9]{2})$/,
+        "Invalid expiry date format (MM/YY)"
+      )
       .refine((val) => {
         const [month, year] = val.split("/")
-        const expiry = new Date(2000 + Number.parseInt(year || "0"), Number.parseInt(month || "0") - 1)
+        const expiry = new Date(
+          2000 + Number.parseInt(year || "0"),
+          Number.parseInt(month || "0") - 1
+        )
         const today = new Date()
         today.setHours(0, 0, 0, 0)
         return expiry >= today
@@ -63,13 +86,19 @@ const formSchema = z
       .regex(/^\d{3,4}$/, "Invalid CVV")
       .refine((val) => val !== "000", "Invalid CVV"),
     checkIn: z.date({
-      required_error: "Please select a check-in date",
+      required_error: "Please select a check-in date"
     }),
     checkOut: z.date({
-      required_error: "Please select a check-out date",
+      required_error: "Please select a check-out date"
     }),
-    guests: z.number().min(1, "At least 1 guest required").max(10, "Maximum 10 guests allowed"),
-    specialRequests: z.string().max(500, "Special requests must be less than 500 characters").optional(),
+    guests: z
+      .number()
+      .min(1, "At least 1 guest required")
+      .max(10, "Maximum 10 guests allowed"),
+    specialRequests: z
+      .string()
+      .max(500, "Special requests must be less than 500 characters")
+      .optional()
   })
   .refine(
     (data) => {
@@ -77,8 +106,8 @@ const formSchema = z
     },
     {
       message: "Check-out date must be after check-in date",
-      path: ["checkOut"],
-    },
+      path: ["checkOut"]
+    }
   )
 
 interface CheckoutFormProps {
@@ -87,25 +116,37 @@ interface CheckoutFormProps {
   onDateChange: (type: "checkIn" | "checkOut", date?: Date) => void
   guests: number
   onGuestsChange: (guests: number) => void
+  prospect: {
+    name: string | null
+    email: string | null
+    phone: string | null
+  }
 }
 
-export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuestsChange }: CheckoutFormProps) {
+export function CheckoutForm({
+  checkIn,
+  checkOut,
+  onDateChange,
+  guests,
+  onGuestsChange,
+  prospect
+}: CheckoutFormProps) {
   const [isSubmitting, setIsSubmitting] = useState(false)
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
-      name: "",
-      email: "",
+      name: prospect.name ?? "",
+      email: prospect.email ?? "",
       cardNumber: "",
       expiryDate: "",
       cvv: "",
       guests,
       specialRequests: "",
       checkIn,
-      checkOut,
+      checkOut
     },
-    mode: "onChange",
+    mode: "onChange"
   })
 
   React.useEffect(() => {
@@ -128,7 +169,7 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
   const formatCardNumber = (value: string) => {
     const v = value.replace(/\s+/g, "").replace(/[^0-9]/gi, "")
     const matches = v.match(/\d{4,16}/g)
-    const match = (matches?.[0] || "")
+    const match = matches?.[0] || ""
     const parts = []
 
     for (let i = 0, len = match.length; i < len; i += 4) {
@@ -141,7 +182,10 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
     return value
   }
 
-  const getValidationState = (fieldName: keyof z.infer<typeof formSchema>, formState: FormState<z.infer<typeof formSchema>>) => {
+  const getValidationState = (
+    fieldName: keyof z.infer<typeof formSchema>,
+    formState: FormState<z.infer<typeof formSchema>>
+  ) => {
     if (!formState.dirtyFields[fieldName]) {
       return "default"
     }
@@ -154,7 +198,10 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
     const value = form.getValues(fieldName)
     if (fieldName === "expiryDate" && typeof value === "string") {
       const [month, year] = value.split("/")
-      const expiry = new Date(2000 + Number.parseInt(year || "0"), Number.parseInt(month || "0") - 1)
+      const expiry = new Date(
+        2000 + Number.parseInt(year || "0"),
+        Number.parseInt(month || "0") - 1
+      )
       if (expiry <= new Date()) {
         return "error"
       }
@@ -178,8 +225,8 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
     transition: {
       type: "spring",
       stiffness: 500,
-      damping: 30,
-    },
+      damping: 30
+    }
   }
 
   const iconAnimation = {
@@ -189,8 +236,8 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
     transition: {
       type: "spring",
       stiffness: 500,
-      damping: 30,
-    },
+      damping: 30
+    }
   }
 
   const errorMessageAnimation = {
@@ -200,8 +247,8 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
     transition: {
       type: "spring",
       stiffness: 500,
-      damping: 30,
-    },
+      damping: 30
+    }
   }
 
   return (
@@ -226,7 +273,7 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                 type: "spring",
                 stiffness: 300,
                 damping: 30,
-                staggerChildren: 0.1,
+                staggerChildren: 0.1
               }}
             >
               {/* Stay Details Section */}
@@ -290,9 +337,9 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                             className="pl-9"
                             {...field}
                             onChange={(e) => {
-                              const value = Number(e.target.value);
-                              field.onChange(value);
-                              onGuestsChange(value);
+                              const value = Number(e.target.value)
+                              field.onChange(value)
+                              onGuestsChange(value)
                             }}
                           />
                         </div>
@@ -333,20 +380,29 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                     <FormItem>
                       <FormLabel>Name</FormLabel>
                       <FormControl>
-                        <motion.div className="relative" whileFocus={inputFocusAnimation}>
+                        <motion.div
+                          className="relative"
+                          whileFocus={inputFocusAnimation}
+                        >
                           <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                           <Input
                             {...field}
                             placeholder="John Doe"
                             className={cn(
                               "pl-9 pr-9 transition-all duration-200",
-                              getValidationStyles(getValidationState("name", formState))
+                              getValidationStyles(
+                                getValidationState("name", formState)
+                              )
                             )}
                           />
                           <AnimatePresence mode="wait">
                             {formState.dirtyFields.name && (
-                              <motion.div {...iconAnimation} className="absolute right-3 top-1/2 -translate-y-1/2">
-                                {getValidationState("name", formState) === "error" ? (
+                              <motion.div
+                                {...iconAnimation}
+                                className="absolute right-3 top-1/2 -translate-y-1/2"
+                              >
+                                {getValidationState("name", formState) ===
+                                "error" ? (
                                   <AlertCircle className="h-4 w-4 text-red-500" />
                                 ) : (
                                   <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -374,7 +430,10 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <motion.div className="relative" whileFocus={inputFocusAnimation}>
+                        <motion.div
+                          className="relative"
+                          whileFocus={inputFocusAnimation}
+                        >
                           <Mail className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                           <Input
                             {...field}
@@ -382,13 +441,19 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                             placeholder="john.doe@example.com"
                             className={cn(
                               "pl-9 pr-9 transition-all duration-200",
-                              getValidationStyles(getValidationState("email", formState))
+                              getValidationStyles(
+                                getValidationState("email", formState)
+                              )
                             )}
                           />
                           <AnimatePresence mode="wait">
                             {formState.dirtyFields.email && (
-                              <motion.div {...iconAnimation} className="absolute right-3 top-1/2 -translate-y-1/2">
-                                {getValidationState("email", formState) === "error" ? (
+                              <motion.div
+                                {...iconAnimation}
+                                className="absolute right-3 top-1/2 -translate-y-1/2"
+                              >
+                                {getValidationState("email", formState) ===
+                                "error" ? (
                                   <AlertCircle className="h-4 w-4 text-red-500" />
                                 ) : (
                                   <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -422,13 +487,18 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                     <FormItem>
                       <FormLabel>Card Number</FormLabel>
                       <FormControl>
-                        <motion.div className="relative" whileFocus={inputFocusAnimation}>
+                        <motion.div
+                          className="relative"
+                          whileFocus={inputFocusAnimation}
+                        >
                           <CreditCard className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                           <Input
                             {...field}
                             className={cn(
                               "pl-9 pr-9 transition-all duration-200 font-mono",
-                              getValidationStyles(getValidationState("cardNumber", formState))
+                              getValidationStyles(
+                                getValidationState("cardNumber", formState)
+                              )
                             )}
                             maxLength={19}
                             onChange={(e) => {
@@ -439,8 +509,12 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                           />
                           <AnimatePresence mode="wait">
                             {formState.dirtyFields.cardNumber && (
-                              <motion.div {...iconAnimation} className="absolute right-3 top-1/2 -translate-y-1/2">
-                                {getValidationState("cardNumber", formState) === "error" ? (
+                              <motion.div
+                                {...iconAnimation}
+                                className="absolute right-3 top-1/2 -translate-y-1/2"
+                              >
+                                {getValidationState("cardNumber", formState) ===
+                                "error" ? (
                                   <AlertCircle className="h-4 w-4 text-red-500" />
                                 ) : (
                                   <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -469,13 +543,18 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                       <FormItem>
                         <FormLabel>Expiry Date</FormLabel>
                         <FormControl>
-                          <motion.div className="relative" whileFocus={inputFocusAnimation}>
+                          <motion.div
+                            className="relative"
+                            whileFocus={inputFocusAnimation}
+                          >
                             <Calendar className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
                               {...field}
                               className={cn(
                                 "pl-9 pr-9 transition-all duration-200 font-mono",
-                                getValidationStyles(getValidationState("expiryDate", formState))
+                                getValidationStyles(
+                                  getValidationState("expiryDate", formState)
+                                )
                               )}
                               placeholder="MM/YY"
                               maxLength={5}
@@ -489,8 +568,14 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                             />
                             <AnimatePresence mode="wait">
                               {formState.dirtyFields.expiryDate && (
-                                <motion.div {...iconAnimation} className="absolute right-3 top-1/2 -translate-y-1/2">
-                                  {getValidationState("expiryDate", formState) === "error" ? (
+                                <motion.div
+                                  {...iconAnimation}
+                                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                                >
+                                  {getValidationState(
+                                    "expiryDate",
+                                    formState
+                                  ) === "error" ? (
                                     <AlertCircle className="h-4 w-4 text-red-500" />
                                   ) : (
                                     <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -518,7 +603,10 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                       <FormItem>
                         <FormLabel>CVV</FormLabel>
                         <FormControl>
-                          <motion.div className="relative" whileFocus={inputFocusAnimation}>
+                          <motion.div
+                            className="relative"
+                            whileFocus={inputFocusAnimation}
+                          >
                             <Lock className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
                             <Input
                               {...field}
@@ -526,7 +614,9 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                               inputMode="numeric"
                               className={cn(
                                 "pl-9 pr-9 transition-all duration-200 font-mono",
-                                getValidationStyles(getValidationState("cvv", formState))
+                                getValidationStyles(
+                                  getValidationState("cvv", formState)
+                                )
                               )}
                               maxLength={4}
                               onChange={(e) => {
@@ -537,8 +627,12 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                             />
                             <AnimatePresence mode="wait">
                               {formState.dirtyFields.cvv && (
-                                <motion.div {...iconAnimation} className="absolute right-3 top-1/2 -translate-y-1/2">
-                                  {getValidationState("cvv", formState) === "error" ? (
+                                <motion.div
+                                  {...iconAnimation}
+                                  className="absolute right-3 top-1/2 -translate-y-1/2"
+                                >
+                                  {getValidationState("cvv", formState) ===
+                                  "error" ? (
                                     <AlertCircle className="h-4 w-4 text-red-500" />
                                   ) : (
                                     <CheckCircle2 className="h-4 w-4 text-green-500" />
@@ -562,8 +656,16 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
               </div>
             </motion.div>
 
-            <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} transition={{ delay: 0.4 }}>
-              <Button type="submit" className="w-full relative" disabled={isSubmitting || !form.formState.isValid}>
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              transition={{ delay: 0.4 }}
+            >
+              <Button
+                type="submit"
+                className="w-full relative"
+                disabled={isSubmitting || !form.formState.isValid}
+              >
                 <AnimatePresence mode="wait">
                   {isSubmitting ? (
                     <motion.div
@@ -576,7 +678,11 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
                       Processing...
                     </motion.div>
                   ) : (
-                    <motion.span initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}>
+                    <motion.span
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                      exit={{ opacity: 0 }}
+                    >
                       Complete Booking
                     </motion.span>
                   )}
@@ -589,4 +695,3 @@ export function CheckoutForm({ checkIn, checkOut, onDateChange, guests, onGuests
     </Card>
   )
 }
-
