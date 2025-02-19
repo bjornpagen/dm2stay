@@ -1,23 +1,11 @@
-"use client"
-
 import React from "react"
-import Masonry from "react-masonry-css"
-import { ConversationCard } from "@/components/conversation-card"
-import { SearchBar } from "@/components/search-bar"
-import { Search } from "lucide-react"
+import { ConversationsPage } from "@/components/conversations-page"
 
 interface RawConversation {
   id: number
   customerName: string
   latestMessage: string
   timestamp: string
-}
-
-interface ParsedConversation {
-  id: number
-  customerName: string
-  latestMessage: string
-  timestamp: Date
 }
 
 const mockConversations: RawConversation[] = [
@@ -96,62 +84,19 @@ const mockConversations: RawConversation[] = [
   }
 ]
 
-const MASONRY_BREAKPOINTS = {
-  default: 6,
-  1920: 6,
-  1536: 5,
-  1280: 4,
-  1024: 3,
-  768: 2,
-  640: 1
+async function getConversations() {
+  return mockConversations.map((conv) => ({
+    ...conv,
+    timestamp: new Date(conv.timestamp)
+  }))
 }
 
-export default function ConversationsPage() {
-  const [searchTerm, setSearchTerm] = React.useState("")
-  const [parsedConversations, setParsedConversations] = React.useState<
-    ParsedConversation[]
-  >([])
-
-  React.useLayoutEffect(() => {
-    // Parse dates on the client side
-    setParsedConversations(
-      mockConversations.map((conv) => ({
-        ...conv,
-        timestamp: new Date(conv.timestamp)
-      }))
-    )
-  }, [])
-
-  const filteredConversations = parsedConversations.filter(
-    (conversation) =>
-      conversation.customerName
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase()) ||
-      conversation.latestMessage
-        .toLowerCase()
-        .includes(searchTerm.toLowerCase())
-  )
+export default function Page() {
+  const conversations = getConversations()
 
   return (
-    <div className="space-y-6">
-      <div className="flex justify-between items-center">
-        <h1 className="text-2xl font-bold">Conversations</h1>
-        <SearchBar
-          placeholder="Search conversations..."
-          value={searchTerm}
-          onChange={setSearchTerm}
-          icon={<Search size={20} />}
-        />
-      </div>
-      <Masonry
-        breakpointCols={MASONRY_BREAKPOINTS}
-        className="flex w-auto -ml-4"
-        columnClassName="pl-4 bg-clip-padding"
-      >
-        {filteredConversations.map((conversation) => (
-          <ConversationCard key={conversation.id} {...conversation} />
-        ))}
-      </Masonry>
-    </div>
+    <React.Suspense>
+      <ConversationsPage conversations={conversations} />
+    </React.Suspense>
   )
 }
