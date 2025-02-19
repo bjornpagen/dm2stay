@@ -3,13 +3,14 @@ import { notFound } from "next/navigation"
 import { CustomerHeader } from "@/components/customer-header"
 import { MessageTimeline } from "@/components/message-timeline"
 import { BookingSummary } from "@/components/booking-summary"
+import { extractPromiseField } from "@/lib/utils"
 import {
   mockCustomerProfile,
   mockMessages,
   mockBookings
 } from "@/lib/mock-data"
 
-async function getCustomer(id: string) {
+async function getCustomer(id: Promise<string>) {
   const customer = mockCustomerProfile
   if (!customer) {
     notFound()
@@ -17,18 +18,18 @@ async function getCustomer(id: string) {
   return customer
 }
 
-async function getMessages(id: string) {
+async function getMessages(id: Promise<string>) {
   return mockMessages
 }
 
-async function getBookings(id: string) {
+async function getBookings(id: Promise<string>) {
   return mockBookings
 }
 
 export default function CustomerPage({
   params
 }: { params: Promise<{ id: string }> }) {
-  const { id } = React.use(params)
+  const id = extractPromiseField(params, "id")
   const customer = getCustomer(id)
   const messages = getMessages(id)
   const bookings = getBookings(id)
