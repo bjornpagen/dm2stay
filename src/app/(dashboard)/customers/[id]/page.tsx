@@ -1,35 +1,59 @@
+import * as React from "react"
 import { notFound } from "next/navigation"
 import { CustomerHeader } from "@/components/customer-header"
 import { MessageTimeline } from "@/components/message-timeline"
 import { BookingSummary } from "@/components/booking-summary"
-import { mockCustomerProfile, mockMessages, mockBookings } from "@/lib/mock-data"
-import { Suspense } from "react"
+import {
+  mockCustomerProfile,
+  mockMessages,
+  mockBookings
+} from "@/lib/mock-data"
 
-export default async function CustomerPage({ params }: { params: Promise<{ id: string }> }) {
+async function CustomerProfileSection({
+  params
+}: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  console.log(id)
+  const customer = mockCustomerProfile
 
-  // In a real app, we would fetch this data based on the ID
-  const customerProfile = mockCustomerProfile
-  const messages = mockMessages
-  const bookings = mockBookings
-
-  if (!mockCustomerProfile) {
+  if (!customer) {
     notFound()
   }
 
+  return <CustomerHeader customer={customer} />
+}
+
+async function MessagesSection({
+  params
+}: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const messages = mockMessages
+
+  return <MessageTimeline messages={messages} />
+}
+
+async function BookingsSection({
+  params
+}: { params: Promise<{ id: string }> }) {
+  const { id } = await params
+  const bookings = mockBookings
+
+  return <BookingSummary bookings={bookings} />
+}
+
+export default function CustomerPage({
+  params
+}: { params: Promise<{ id: string }> }) {
   return (
     <div className="space-y-6 md:space-y-8">
-      <Suspense>
-        <CustomerHeader customer={customerProfile} />
-      </Suspense>
-      <Suspense>
-        <MessageTimeline messages={messages} />
-      </Suspense>
-      <Suspense>
-        <BookingSummary bookings={bookings} />
-      </Suspense>
+      <React.Suspense>
+        <CustomerProfileSection params={params} />
+      </React.Suspense>
+      <React.Suspense>
+        <MessagesSection params={params} />
+      </React.Suspense>
+      <React.Suspense>
+        <BookingsSection params={params} />
+      </React.Suspense>
     </div>
   )
 }
-
