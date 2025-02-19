@@ -174,7 +174,8 @@ export const messageReceived = inngest.createFunction(
       .select({
         prospectId: schema.message.prospectId,
         userId: schema.message.userId,
-        content: schema.message.content
+        content: schema.message.content,
+        createdAt: schema.message.createdAt
       })
       .from(schema.message)
       .where(eq(schema.message.id, messageId))
@@ -183,7 +184,7 @@ export const messageReceived = inngest.createFunction(
     if (!message) {
       throw new Error("Message not found")
     }
-    const { prospectId, userId, content } = message
+    const { prospectId, userId, content, createdAt } = message
 
     const [
       prospect,
@@ -281,10 +282,9 @@ export const messageReceived = inngest.createFunction(
       throw new Error("Prospect not found")
     }
 
-    const messages = [
-      {
-        role: "system" as const,
-        content: `You are a vacation rental booking assistant. Your role is to assist guests in making a booking for a vacation rental.
+    const systemMessage = {
+      role: "system" as const,
+      content: `You are a vacation rental booking assistant. Your role is to assist guests in making a booking for a vacation rental.
 
 [GUEST INFO]
 ${formatProspectInfo(prospect)}
@@ -300,7 +300,9 @@ ${formatBookingFocus(activeBooking)}
 
 When booking details are provided, immediately invoke finalizeBooking to record the booking.
 Respond in a friendly, natural manner, as in a real conversation. When needed, split your response into multiple short messages using a single newline "\\n" solely for message separation.`
-      },
+    }
+
+    const conversationHistory = [
       ...previousMessages.map((msg) => ({
         role:
           msg.source === "instagram_dm" ||
@@ -310,18 +312,22 @@ Respond in a friendly, natural manner, as in a real conversation. When needed, s
           msg.source === "test"
             ? ("user" as const)
             : ("assistant" as const),
-        content: msg.content
+        content: msg.content,
+        createdAt: msg.createdAt
       })),
       ...toolCallsHistory.map((tc) => ({
         role: "tool" as const,
         tool_call_id: tc.openaiId,
-        content: `${tc.functionName}: args ${JSON.stringify(tc.functionArgs)} returned ${tc.result}`
+        content: `${tc.functionName}: args ${JSON.stringify(tc.functionArgs)} returned ${tc.result}`,
+        createdAt: tc.createdAt
       })),
-      {
-        role: "user" as const,
-        content
-      }
-    ]
+      { role: "user" as const, content, createdAt }
+    ].sort(
+      (a, b) =>
+        new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
+    )
+
+    const messages = [systemMessage, ...conversationHistory]
 
     const response = await openai.chat.completions.create({
       model: OPENAI_DEFAULT_MODEL,
