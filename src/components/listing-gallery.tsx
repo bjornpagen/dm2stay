@@ -23,7 +23,10 @@ export function ListingGallery({ gallery }: { gallery: Gallery }) {
             {images.map((image, index) => (
               <div
                 key={index}
-                className={cn(imageClassName, index === 0 ? "w-[600px]" : "w-[300px]")}
+                className={cn(
+                  imageClassName,
+                  index === 0 ? "w-[600px]" : "w-[300px]"
+                )}
                 onClick={() => setSelectedImage(image.src)}
               >
                 <Image
@@ -38,7 +41,10 @@ export function ListingGallery({ gallery }: { gallery: Gallery }) {
         </div>
       </div>
 
-      <Dialog open={!!selectedImage} onOpenChange={() => setSelectedImage(null)}>
+      <Dialog
+        open={!!selectedImage}
+        onOpenChange={() => setSelectedImage(null)}
+      >
         <DialogContent className="max-w-4xl p-0">
           <div className="relative">
             {selectedImage && (
@@ -57,13 +63,17 @@ export function ListingGallery({ gallery }: { gallery: Gallery }) {
                 className="h-8 w-8 rounded-full bg-black/50 text-white border-none hover:bg-black/70"
                 onClick={(e) => {
                   e.stopPropagation()
-                  const currentIndex = images.findIndex((img) => img.src === selectedImage)
+                  const currentIndex = images.findIndex(
+                    (img) => img.src === selectedImage
+                  )
                   const prevImage = images[currentIndex - 1]
                   if (prevImage) {
                     setSelectedImage(prevImage.src)
                   }
                 }}
-                disabled={images.findIndex((img) => img.src === selectedImage) === 0}
+                disabled={
+                  images.findIndex((img) => img.src === selectedImage) === 0
+                }
               >
                 <ChevronLeft className="h-4 w-4" />
                 <span className="sr-only">Previous image</span>
@@ -74,13 +84,18 @@ export function ListingGallery({ gallery }: { gallery: Gallery }) {
                 className="h-8 w-8 rounded-full bg-black/50 text-white border-none hover:bg-black/70"
                 onClick={(e) => {
                   e.stopPropagation()
-                  const currentIndex = images.findIndex((img) => img.src === selectedImage)
+                  const currentIndex = images.findIndex(
+                    (img) => img.src === selectedImage
+                  )
                   const nextImage = images[currentIndex + 1]
                   if (nextImage) {
                     setSelectedImage(nextImage.src)
                   }
                 }}
-                disabled={images.findIndex((img) => img.src === selectedImage) === images.length - 1}
+                disabled={
+                  images.findIndex((img) => img.src === selectedImage) ===
+                  images.length - 1
+                }
               >
                 <ChevronRight className="h-4 w-4" />
                 <span className="sr-only">Next image</span>
@@ -111,4 +126,3 @@ export function ListingGallery({ gallery }: { gallery: Gallery }) {
     </>
   )
 }
-

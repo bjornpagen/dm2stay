@@ -22,9 +22,12 @@ export function ListingLocation({ location }: { location: Location }) {
             <p>{detail.content}</p>
           </div>
         ))}
-        {location.disclaimer && <p className="mt-4 text-sm text-muted-foreground">{location.disclaimer}</p>}
+        {location.disclaimer && (
+          <p className="mt-4 text-sm text-muted-foreground">
+            {location.disclaimer}
+          </p>
+        )}
       </CardContent>
     </Card>
   )
 }
-

@@ -5,7 +5,7 @@ const stats = [
   { label: "Active Conversations", value: 24, icon: MessageSquare },
   { label: "Pending Responses", value: 5, icon: Clock },
   { label: "Today's Bookings", value: 3, icon: Home },
-  { label: "Recent Revenue", value: "$1,250", icon: DollarSign },
+  { label: "Recent Revenue", value: "$1,250", icon: DollarSign }
 ]
 
 export function SummaryHeader() {
@@ -17,7 +17,9 @@ export function SummaryHeader() {
             <CardContent className="flex items-center p-3">
               <stat.icon size={20} className="text-primary mr-3" />
               <div>
-                <p className="text-sm font-medium text-muted-foreground">{stat.label}</p>
+                <p className="text-sm font-medium text-muted-foreground">
+                  {stat.label}
+                </p>
                 <p className="text-2xl font-semibold">{stat.value}</p>
               </div>
             </CardContent>
@@ -27,4 +29,3 @@ export function SummaryHeader() {
     </div>
   )
 }
-

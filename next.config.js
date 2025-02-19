@@ -7,9 +7,7 @@ import "./src/env.js"
 /** @type {import("next").NextConfig} */
 const config = {
   images: {
-    domains: [
-      "a0.muscache.com"
-    ]
+    domains: ["a0.muscache.com"]
   },
   experimental: {
     ppr: true,

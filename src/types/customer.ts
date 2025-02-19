@@ -49,4 +49,3 @@ export interface Booking {
   totalAmount: number
   guestCount: number
 }
-

@@ -3,18 +3,27 @@
 import { useState } from "react"
 import { CustomerTable } from "@/components/customer-table"
 import { Input } from "@/components/ui/input"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 import { mockCustomerList } from "@/lib/mock-customer-list"
 
 export default function CustomersPage() {
   const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState<"all" | "active" | "inactive">("all")
+  const [statusFilter, setStatusFilter] = useState<
+    "all" | "active" | "inactive"
+  >("all")
 
   const filteredCustomers = mockCustomerList.filter((customer) => {
     const matchesSearch =
       customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
       customer.email.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus = statusFilter === "all" || customer.status === statusFilter
+    const matchesStatus =
+      statusFilter === "all" || customer.status === statusFilter
     return matchesSearch && matchesStatus
   })
 
@@ -28,7 +37,12 @@ export default function CustomersPage() {
           onChange={(e) => setSearchTerm(e.target.value)}
           className="max-w-sm"
         />
-        <Select value={statusFilter} onValueChange={(value: "all" | "active" | "inactive") => setStatusFilter(value)}>
+        <Select
+          value={statusFilter}
+          onValueChange={(value: "all" | "active" | "inactive") =>
+            setStatusFilter(value)
+          }
+        >
           <SelectTrigger className="w-[180px]">
             <SelectValue placeholder="Filter by status" />
           </SelectTrigger>
@@ -43,4 +57,3 @@ export default function CustomersPage() {
     </div>
   )
 }
-

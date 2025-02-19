@@ -15,8 +15,13 @@ export function ListingReviews({ reviews }: { reviews: Review[] }) {
             <div key={review.id} className="border-b pb-4 last:border-b-0">
               <div className="flex items-center mb-2">
                 <Avatar className="h-10 w-10 mr-3">
-                  <AvatarImage src={review.reviewer.photo} alt={review.reviewer.name} />
-                  <AvatarFallback>{review.reviewer.name.charAt(0)}</AvatarFallback>
+                  <AvatarImage
+                    src={review.reviewer.photo}
+                    alt={review.reviewer.name}
+                  />
+                  <AvatarFallback>
+                    {review.reviewer.name.charAt(0)}
+                  </AvatarFallback>
                 </Avatar>
                 <div>
                   <p className="font-semibold">{review.reviewer.name}</p>
@@ -28,7 +33,11 @@ export function ListingReviews({ reviews }: { reviews: Review[] }) {
                 </div>
               </div>
               <p>{review.comment}</p>
-              {review.highlight && <p className="mt-2 font-medium">"Highlight: {review.highlight}"</p>}
+              {review.highlight && (
+                <p className="mt-2 font-medium">
+                  "Highlight: {review.highlight}"
+                </p>
+              )}
               {review.response && (
                 <div className="mt-2 pl-4 border-l-2 border-muted">
                   <p className="font-medium">Host response:</p>
@@ -42,4 +51,3 @@ export function ListingReviews({ reviews }: { reviews: Review[] }) {
     </Card>
   )
 }
-

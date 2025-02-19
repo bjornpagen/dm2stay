@@ -13,14 +13,19 @@ interface SearchBarProps {
   icon?: React.ReactNode
 }
 
-export function SearchBar({ placeholder, value, onChange, icon }: SearchBarProps) {
+export function SearchBar({
+  placeholder,
+  value,
+  onChange,
+  icon
+}: SearchBarProps) {
   const [localValue, setLocalValue] = useState(value)
 
   const debouncedOnChange = useCallback(
     debounce((value: string) => {
       onChange(value)
     }, 300),
-    [],
+    []
   )
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -31,7 +36,11 @@ export function SearchBar({ placeholder, value, onChange, icon }: SearchBarProps
 
   return (
     <div className="relative w-full max-w-[400px]">
-      {icon && <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">{icon}</div>}
+      {icon && (
+        <div className="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none">
+          {icon}
+        </div>
+      )}
       <Input
         type="text"
         placeholder={placeholder}
@@ -42,4 +51,3 @@ export function SearchBar({ placeholder, value, onChange, icon }: SearchBarProps
     </div>
   )
 }
-

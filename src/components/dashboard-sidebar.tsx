@@ -13,7 +13,7 @@ import {
   SidebarHeader,
   SidebarMenu,
   SidebarMenuItem,
-  SidebarMenuButton,
+  SidebarMenuButton
 } from "@/components/ui/sidebar"
 
 export function DashboardSidebar() {
@@ -23,18 +23,18 @@ export function DashboardSidebar() {
     {
       title: "Dashboard",
       icon: LayoutDashboard,
-      href: "/dashboard",
+      href: "/dashboard"
     },
     {
       title: "Listings",
       icon: Home,
-      href: "/listings",
+      href: "/listings"
     },
     {
       title: "Reservations",
       icon: CalendarDays,
-      href: "/reservations",
-    },
+      href: "/reservations"
+    }
   ]
 
   return (
@@ -63,4 +63,4 @@ export function DashboardSidebar() {
       </SidebarContent>
     </Sidebar>
   )
-} 
+}

@@ -36,4 +36,3 @@ export function ListingAmenities({ amenities }: { amenities?: Amenities }) {
     </Card>
   )
 }
-

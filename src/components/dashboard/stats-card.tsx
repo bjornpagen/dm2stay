@@ -12,18 +12,27 @@ interface StatsCardProps {
   historicalData?: number[] // Array of historical values for the sparkline
 }
 
-function Sparkline({ data, color, title }: { data: number[], color: string, title: string }) {
-  const normalizedData = data.length > 0 ? data.map((value, i) => {
-    const max = Math.max(...data)
-    const min = Math.min(...data)
-    const range = max - min || 1
-    return {
-      x: (i / (data.length - 1)) * 100,
-      y: 100 - ((value - min) / range) * 100
-    }
-  }) : []
+function Sparkline({
+  data,
+  color,
+  title
+}: { data: number[]; color: string; title: string }) {
+  const normalizedData =
+    data.length > 0
+      ? data.map((value, i) => {
+          const max = Math.max(...data)
+          const min = Math.min(...data)
+          const range = max - min || 1
+          return {
+            x: (i / (data.length - 1)) * 100,
+            y: 100 - ((value - min) / range) * 100
+          }
+        })
+      : []
 
-  const points = normalizedData.map(point => `${point.x},${point.y}`).join(' ')
+  const points = normalizedData
+    .map((point) => `${point.x},${point.y}`)
+    .join(" ")
 
   return (
     <svg
@@ -44,7 +53,13 @@ function Sparkline({ data, color, title }: { data: number[], color: string, titl
   )
 }
 
-export function StatsCard({ title, value, change, icon: Icon, historicalData = [] }: StatsCardProps) {
+export function StatsCard({
+  title,
+  value,
+  change,
+  icon: Icon,
+  historicalData = []
+}: StatsCardProps) {
   let trendColor = "var(--muted-foreground)"
   if (change.trend === "up") {
     trendColor = "var(--primary)"
@@ -72,4 +87,4 @@ export function StatsCard({ title, value, change, icon: Icon, historicalData = [
       </div>
     </Card>
   )
-} 
+}

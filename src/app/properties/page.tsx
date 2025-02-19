@@ -5,7 +5,7 @@ import {
   TableCell,
   TableHead,
   TableHeader,
-  TableRow,
+  TableRow
 } from "@/components/ui/table"
 import { Plus } from "lucide-react"
 
@@ -15,22 +15,22 @@ const properties = [
     name: "Sunset Villa",
     location: "Miami, FL",
     type: "Villa",
-    status: "Available",
+    status: "Available"
   },
   {
     id: "2",
     name: "Mountain Lodge",
     location: "Aspen, CO",
     type: "Cabin",
-    status: "Occupied",
+    status: "Occupied"
   },
   {
     id: "3",
     name: "City Loft",
     location: "New York, NY",
     type: "Apartment",
-    status: "Available",
-  },
+    status: "Available"
+  }
 ]
 
 export default function PropertiesPage() {
@@ -72,4 +72,4 @@ export default function PropertiesPage() {
       </div>
     </div>
   )
-} 
+}

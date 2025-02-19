@@ -8,7 +8,7 @@ export function ListingOverview({ overview }: { overview: Overview }) {
   return (
     <Card>
       <CardHeader>
-        <CardTitle>{overview.title || 'Listing Title Not Found'}</CardTitle>
+        <CardTitle>{overview.title || "Listing Title Not Found"}</CardTitle>
       </CardHeader>
       <CardContent className="grid md:grid-cols-2 gap-4">
         <div>
@@ -19,7 +19,9 @@ export function ListingOverview({ overview }: { overview: Overview }) {
             <div className="flex items-center mt-2">
               <Star className="w-5 h-5 text-yellow-400 mr-1 fill-current" />
               <span>{overview.rating.toFixed(1)}</span>
-              <span className="text-muted-foreground ml-1">({overview.reviewCount} reviews)</span>
+              <span className="text-muted-foreground ml-1">
+                ({overview.reviewCount} reviews)
+              </span>
             </div>
           )}
           {overview.isSuperhost && (
@@ -43,4 +45,3 @@ export function ListingOverview({ overview }: { overview: Overview }) {
     </Card>
   )
 }
-

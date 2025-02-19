@@ -1,6 +1,11 @@
 import type { Policies } from "@/types/listing"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion"
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger
+} from "@/components/ui/accordion"
 
 export function ListingPolicies({ policies }: { policies: Policies }) {
   return (
@@ -31,7 +36,7 @@ export function ListingPolicies({ policies }: { policies: Policies }) {
                       {rule.icon && <span className="mr-2">{rule.icon}</span>}
                       <span>{rule.title}</span>
                     </li>
-                  )),
+                  ))
                 )}
               </ul>
             </AccordionContent>
@@ -54,4 +59,3 @@ export function ListingPolicies({ policies }: { policies: Policies }) {
     </Card>
   )
 }
-

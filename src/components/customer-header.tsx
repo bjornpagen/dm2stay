@@ -1,8 +1,14 @@
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
-import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Calendar, MapPin, Phone, Mail, Clock, CreditCard, MessageSquare, FileText, AlertCircle } from "lucide-react"
+import {
+  Calendar,
+  MapPin,
+  Phone,
+  Mail,
+  Clock,
+  CreditCard,
+} from "lucide-react"
 import type { CustomerProfile } from "@/types/customer"
 
 export function CustomerHeader({ customer }: { customer: CustomerProfile }) {
@@ -51,7 +57,9 @@ export function CustomerHeader({ customer }: { customer: CustomerProfile }) {
               <Calendar className="h-5 w-5 text-muted-foreground mr-3" />
               <div>
                 <p className="text-sm font-medium">Member Since</p>
-                <p className="text-lg font-bold">{customer.joinDate.toLocaleDateString()}</p>
+                <p className="text-lg font-bold">
+                  {customer.joinDate.toLocaleDateString()}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -60,7 +68,9 @@ export function CustomerHeader({ customer }: { customer: CustomerProfile }) {
               <CreditCard className="h-5 w-5 text-muted-foreground mr-3" />
               <div>
                 <p className="text-sm font-medium">Total Spent</p>
-                <p className="text-lg font-bold">${customer.totalSpent.toLocaleString()}</p>
+                <p className="text-lg font-bold">
+                  ${customer.totalSpent.toLocaleString()}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -69,7 +79,9 @@ export function CustomerHeader({ customer }: { customer: CustomerProfile }) {
               <Phone className="h-5 w-5 text-muted-foreground mr-3" />
               <div>
                 <p className="text-sm font-medium">Phone</p>
-                <p className="text-lg font-bold">{customer.phone || "Not provided"}</p>
+                <p className="text-lg font-bold">
+                  {customer.phone || "Not provided"}
+                </p>
               </div>
             </CardContent>
           </Card>
@@ -92,4 +104,3 @@ export function CustomerHeader({ customer }: { customer: CustomerProfile }) {
     </Card>
   )
 }
-

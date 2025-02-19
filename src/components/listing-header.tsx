@@ -9,7 +9,11 @@ import { ListingPriceEditor } from "@/components/listing-price-editor"
 export function ListingHeader({ overview }: { overview: Overview }) {
   const [pricing, setPricing] = useState(overview.pricing)
 
-  const handlePriceUpdate = async (newPrices: { perNight: number; perWeek: number; perMonth: number }) => {
+  const handlePriceUpdate = async (newPrices: {
+    perNight: number
+    perWeek: number
+    perMonth: number
+  }) => {
     // TODO: Implement API call to update prices
     console.log("Updating prices:", newPrices)
     setPricing(newPrices)
@@ -41,7 +45,9 @@ export function ListingHeader({ overview }: { overview: Overview }) {
         <div className="flex items-center gap-2">
           <Star className="w-5 h-5 text-yellow-400 fill-current" />
           <span className="font-medium">{overview.rating}</span>
-          <span className="text-muted-foreground">({overview.reviewCount} reviews)</span>
+          <span className="text-muted-foreground">
+            ({overview.reviewCount} reviews)
+          </span>
         </div>
       )}
 
@@ -74,4 +80,3 @@ export function ListingHeader({ overview }: { overview: Overview }) {
     </div>
   )
 }
-

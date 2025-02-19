@@ -5,7 +5,7 @@ import { MessageSquare, HomeIcon, Users } from "lucide-react"
 const menuItems = [
   { title: "Conversations", icon: MessageSquare, url: "/conversations" },
   { title: "Listings", icon: HomeIcon, url: "/listings" },
-  { title: "Customers", icon: Users, url: "/customers" },
+  { title: "Customers", icon: Users, url: "/customers" }
 ]
 
 export function Header() {
@@ -35,4 +35,3 @@ export function Header() {
     </header>
   )
 }
-

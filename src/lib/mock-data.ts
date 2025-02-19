@@ -3,7 +3,8 @@ import type { Message, Booking, CustomerProfile } from "@/types/customer"
 export const mockCustomerProfile: CustomerProfile = {
   id: 1,
   name: "Alice Johnson",
-  avatar: "https://a0.muscache.com/im/users/7919941/profile_pic/1376202256/original.jpg",
+  avatar:
+    "https://a0.muscache.com/im/users/7919941/profile_pic/1376202256/original.jpg",
   email: "alice.j@example.com",
   phone: "+1 (555) 123-4567",
   joinDate: new Date("2023-01-15"),
@@ -15,8 +16,8 @@ export const mockCustomerProfile: CustomerProfile = {
   verificationStatus: {
     email: true,
     phone: true,
-    government_id: true,
-  },
+    government_id: true
+  }
 }
 
 export const mockMessages: Message[] = [
@@ -28,19 +29,21 @@ export const mockMessages: Message[] = [
     sender: {
       type: "guest",
       name: "Alice Johnson",
-      avatar: "https://a0.muscache.com/im/users/7919941/profile_pic/1376202256/original.jpg",
+      avatar:
+        "https://a0.muscache.com/im/users/7919941/profile_pic/1376202256/original.jpg"
     },
-    source: "email",
+    source: "email"
   },
   {
     id: 2,
-    content: "Hello Alice! Thank you for your interest. I'll check the availability right away.",
+    content:
+      "Hello Alice! Thank you for your interest. I'll check the availability right away.",
     timestamp: new Date("2024-02-15T10:32:00"),
     sender: {
       type: "ai",
-      name: "AI Assistant",
+      name: "AI Assistant"
     },
-    source: "email",
+    source: "email"
   },
   {
     id: 3,
@@ -50,9 +53,9 @@ export const mockMessages: Message[] = [
     sender: {
       type: "host",
       name: "John Host",
-      avatar: "/host-avatar.jpg",
+      avatar: "/host-avatar.jpg"
     },
-    source: "email",
+    source: "email"
   },
   {
     id: 4,
@@ -62,9 +65,10 @@ export const mockMessages: Message[] = [
     sender: {
       type: "guest",
       name: "Alice Johnson",
-      avatar: "https://a0.muscache.com/im/users/7919941/profile_pic/1376202256/original.jpg",
+      avatar:
+        "https://a0.muscache.com/im/users/7919941/profile_pic/1376202256/original.jpg"
     },
-    source: "sms",
+    source: "sms"
   },
   {
     id: 5,
@@ -74,9 +78,9 @@ export const mockMessages: Message[] = [
     sender: {
       type: "host",
       name: "John Host",
-      avatar: "/host-avatar.jpg",
+      avatar: "/host-avatar.jpg"
     },
-    source: "sms",
+    source: "sms"
   },
   {
     id: 6,
@@ -86,9 +90,10 @@ export const mockMessages: Message[] = [
     sender: {
       type: "guest",
       name: "Alice Johnson",
-      avatar: "https://a0.muscache.com/im/users/7919941/profile_pic/1376202256/original.jpg",
+      avatar:
+        "https://a0.muscache.com/im/users/7919941/profile_pic/1376202256/original.jpg"
     },
-    source: "instagram",
+    source: "instagram"
   },
   {
     id: 7,
@@ -98,9 +103,9 @@ export const mockMessages: Message[] = [
     sender: {
       type: "host",
       name: "John Host",
-      avatar: "/host-avatar.jpg",
+      avatar: "/host-avatar.jpg"
     },
-    source: "instagram",
+    source: "instagram"
   },
   {
     id: 8,
@@ -110,9 +115,10 @@ export const mockMessages: Message[] = [
     sender: {
       type: "guest",
       name: "Alice Johnson",
-      avatar: "https://a0.muscache.com/im/users/7919941/profile_pic/1376202256/original.jpg",
+      avatar:
+        "https://a0.muscache.com/im/users/7919941/profile_pic/1376202256/original.jpg"
     },
-    source: "tiktok",
+    source: "tiktok"
   },
   {
     id: 9,
@@ -122,10 +128,10 @@ export const mockMessages: Message[] = [
     sender: {
       type: "host",
       name: "John Host",
-      avatar: "/host-avatar.jpg",
+      avatar: "/host-avatar.jpg"
     },
-    source: "tiktok",
-  },
+    source: "tiktok"
+  }
 ]
 
 export const mockBookings: Booking[] = [
@@ -137,7 +143,7 @@ export const mockBookings: Booking[] = [
     status: "upcoming",
     paymentStatus: "paid",
     totalAmount: 1200,
-    guestCount: 2,
+    guestCount: 2
   },
   {
     id: 2,
@@ -147,7 +153,7 @@ export const mockBookings: Booking[] = [
     status: "completed",
     paymentStatus: "paid",
     totalAmount: 850,
-    guestCount: 4,
+    guestCount: 4
   },
   {
     id: 3,
@@ -157,7 +163,6 @@ export const mockBookings: Booking[] = [
     status: "completed",
     paymentStatus: "paid",
     totalAmount: 700,
-    guestCount: 2,
-  },
+    guestCount: 2
+  }
 ]
-

@@ -9,12 +9,12 @@ import {
   CardDescription,
   CardFooter,
   CardHeader,
-  CardTitle,
+  CardTitle
 } from "@/components/ui/card"
 import {
   type ChartConfig,
   ChartContainer,
-  ChartTooltip,
+  ChartTooltip
 } from "@/components/ui/chart"
 import { Button } from "@/components/ui/button"
 import { useState } from "react"
@@ -29,40 +29,40 @@ type TimePeriod = "1y" | "6m" | "3m" | "1m"
 
 const chartConfig = {
   revenue: {
-    label: "Revenue",
+    label: "Revenue"
   },
   jan: {
     label: "January",
-    color: "hsl(var(--chart-1))",
+    color: "hsl(var(--chart-1))"
   },
   feb: {
     label: "February",
-    color: "hsl(var(--chart-2))",
+    color: "hsl(var(--chart-2))"
   },
   mar: {
     label: "March",
-    color: "hsl(var(--chart-3))",
+    color: "hsl(var(--chart-3))"
   },
   apr: {
     label: "April",
-    color: "hsl(var(--chart-4))",
+    color: "hsl(var(--chart-4))"
   },
   may: {
     label: "May",
-    color: "hsl(var(--chart-5))",
+    color: "hsl(var(--chart-5))"
   },
   jun: {
     label: "June",
-    color: "hsl(var(--chart-1))",
-  },
+    color: "hsl(var(--chart-1))"
+  }
 } satisfies ChartConfig
 
-export function RevenueChart({ 
+export function RevenueChart({
   data,
   className
-}: { 
+}: {
   data: RevenueData[]
-  className?: string 
+  className?: string
 }) {
   const [timePeriod, setTimePeriod] = useState<TimePeriod>("1y")
 
@@ -191,4 +191,4 @@ export function RevenueChart({
       </CardFooter>
     </Card>
   )
-} 
+}

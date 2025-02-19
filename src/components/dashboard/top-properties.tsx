@@ -17,7 +17,10 @@ export function TopProperties({ properties }: { properties: Property[] }) {
       </div>
       <div className="space-y-4">
         {properties.map((property) => (
-          <div key={property.name} className="flex items-center justify-between border-b pb-4 last:border-0">
+          <div
+            key={property.name}
+            className="flex items-center justify-between border-b pb-4 last:border-0"
+          >
             <div>
               <p className="font-medium">{property.name}</p>
               <div className="flex gap-4 mt-1 text-sm text-muted-foreground">
@@ -34,4 +37,4 @@ export function TopProperties({ properties }: { properties: Property[] }) {
       </div>
     </Card>
   )
-} 
+}

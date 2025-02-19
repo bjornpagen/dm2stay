@@ -1,7 +1,15 @@
 "use client"
 
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { LineChart, Line, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts"
+import {
+  LineChart,
+  Line,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer
+} from "recharts"
 
 const mockAnalyticsData = [
   { month: "Jan", inquiries: 10, bookings: 5 },
@@ -9,7 +17,7 @@ const mockAnalyticsData = [
   { month: "Mar", inquiries: 20, bookings: 12 },
   { month: "Apr", inquiries: 25, bookings: 15 },
   { month: "May", inquiries: 30, bookings: 18 },
-  { month: "Jun", inquiries: 35, bookings: 22 },
+  { month: "Jun", inquiries: 35, bookings: 22 }
 ]
 
 export function ListingAnalytics({ listingId }: { listingId: string }) {
@@ -23,11 +31,15 @@ export function ListingAnalytics({ listingId }: { listingId: string }) {
       <CardContent className="space-y-6">
         <div className="grid grid-cols-2 gap-4">
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">Conversion Rate</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Conversion Rate
+            </p>
             <p className="text-2xl font-bold">62.8%</p>
           </div>
           <div className="space-y-1">
-            <p className="text-sm font-medium text-muted-foreground">Average Stay</p>
+            <p className="text-sm font-medium text-muted-foreground">
+              Average Stay
+            </p>
             <p className="text-2xl font-bold">4.2 nights</p>
           </div>
         </div>
@@ -39,8 +51,18 @@ export function ListingAnalytics({ listingId }: { listingId: string }) {
               <XAxis dataKey="month" />
               <YAxis />
               <Tooltip />
-              <Line type="monotone" dataKey="inquiries" stroke="#8884d8" name="Inquiries" />
-              <Line type="monotone" dataKey="bookings" stroke="#82ca9d" name="Bookings" />
+              <Line
+                type="monotone"
+                dataKey="inquiries"
+                stroke="#8884d8"
+                name="Inquiries"
+              />
+              <Line
+                type="monotone"
+                dataKey="bookings"
+                stroke="#82ca9d"
+                name="Bookings"
+              />
             </LineChart>
           </ResponsiveContainer>
         </div>
@@ -48,4 +70,3 @@ export function ListingAnalytics({ listingId }: { listingId: string }) {
     </Card>
   )
 }
-

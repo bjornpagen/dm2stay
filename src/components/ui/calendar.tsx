@@ -18,7 +18,8 @@ function Calendar({
       showOutsideDays={showOutsideDays}
       className={cn("p-3 w-full h-full flex flex-col", className)}
       classNames={{
-        months: "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 w-full flex-1",
+        months:
+          "flex flex-col sm:flex-row space-y-4 sm:space-x-4 sm:space-y-0 w-full flex-1",
         month: "space-y-4 w-full flex-1 flex flex-col",
         caption: "flex justify-center pt-1 relative items-center mb-4",
         caption_label: "text-base font-medium",
@@ -55,7 +56,7 @@ function Calendar({
         day_range_middle:
           "aria-selected:bg-accent aria-selected:text-accent-foreground",
         day_hidden: "invisible",
-        ...classNames,
+        ...classNames
       }}
       components={{
         IconLeft: ({ className, ...props }) => (
@@ -63,7 +64,7 @@ function Calendar({
         ),
         IconRight: ({ className, ...props }) => (
           <ChevronRight className={cn("size-4", className)} {...props} />
-        ),
+        )
       }}
       {...props}
     />

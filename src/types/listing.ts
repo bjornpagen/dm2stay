@@ -107,4 +107,3 @@ export interface Review {
   highlight?: string
   response?: string
 }
-

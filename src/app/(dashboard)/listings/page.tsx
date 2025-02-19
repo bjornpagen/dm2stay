@@ -17,14 +17,16 @@ const mockListings = [
     price: {
       perNight: 250,
       perWeek: 1500,
-      perMonth: 5000,
+      perMonth: 5000
     },
     rating: 4.8,
     reviewCount: 55,
     inquiries: 15,
     activeBookings: 3,
     conversionRate: 0.2,
-    occupancyData: [65, 70, 68, 72, 75, 80, 82, 85, 80, 78].map((value) => ({ value })),
+    occupancyData: [65, 70, 68, 72, 75, 80, 82, 85, 80, 78].map((value) => ({
+      value
+    }))
   },
   {
     id: 2,
@@ -35,14 +37,16 @@ const mockListings = [
     price: {
       perNight: 180,
       perWeek: 1100,
-      perMonth: 3800,
+      perMonth: 3800
     },
     rating: 4.8,
     reviewCount: 42,
     inquiries: 10,
     activeBookings: 2,
     conversionRate: 0.15,
-    occupancyData: [60, 62, 65, 68, 70, 72, 75, 73, 70, 72].map((value) => ({ value })),
+    occupancyData: [60, 62, 65, 68, 70, 72, 75, 73, 70, 72].map((value) => ({
+      value
+    }))
   },
   {
     id: 3,
@@ -53,14 +57,16 @@ const mockListings = [
     price: {
       perNight: 300,
       perWeek: 1800,
-      perMonth: 6000,
+      perMonth: 6000
     },
     rating: 4.9,
     reviewCount: 68,
     inquiries: 20,
     activeBookings: 5,
     conversionRate: 0.25,
-    occupancyData: [75, 78, 80, 82, 85, 88, 90, 92, 90, 88].map((value) => ({ value })),
+    occupancyData: [75, 78, 80, 82, 85, 88, 90, 92, 90, 88].map((value) => ({
+      value
+    }))
   },
   {
     id: 4,
@@ -71,14 +77,16 @@ const mockListings = [
     price: {
       perNight: 150,
       perWeek: 900,
-      perMonth: 3000,
+      perMonth: 3000
     },
     rating: 4.6,
     reviewCount: 89,
     inquiries: 18,
     activeBookings: 4,
     conversionRate: 0.22,
-    occupancyData: [70, 72, 75, 78, 80, 82, 85, 83, 80, 82].map((value) => ({ value })),
+    occupancyData: [70, 72, 75, 78, 80, 82, 85, 83, 80, 82].map((value) => ({
+      value
+    }))
   },
   {
     id: 5,
@@ -89,14 +97,16 @@ const mockListings = [
     price: {
       perNight: 120,
       perWeek: 700,
-      perMonth: 2400,
+      perMonth: 2400
     },
     rating: 4.8,
     reviewCount: 36,
     inquiries: 8,
     activeBookings: 2,
     conversionRate: 0.18,
-    occupancyData: [55, 58, 60, 62, 65, 68, 70, 72, 70, 68].map((value) => ({ value })),
+    occupancyData: [55, 58, 60, 62, 65, 68, 70, 72, 70, 68].map((value) => ({
+      value
+    }))
   },
   {
     id: 6,
@@ -107,15 +117,17 @@ const mockListings = [
     price: {
       perNight: 100,
       perWeek: 600,
-      perMonth: 2000,
+      perMonth: 2000
     },
     rating: 4.7,
     reviewCount: 52,
     inquiries: 12,
     activeBookings: 3,
     conversionRate: 0.2,
-    occupancyData: [65, 68, 70, 72, 75, 78, 80, 82, 80, 78].map((value) => ({ value })),
-  },
+    occupancyData: [65, 68, 70, 72, 75, 78, 80, 82, 80, 78].map((value) => ({
+      value
+    }))
+  }
 ]
 
 export default function ListingsPage() {
@@ -123,7 +135,7 @@ export default function ListingsPage() {
   const [isImportModalOpen, setIsImportModalOpen] = useState(false)
 
   const filteredListings = mockListings.filter((listing) =>
-    listing.name.toLowerCase().includes(searchTerm.toLowerCase()),
+    listing.name.toLowerCase().includes(searchTerm.toLowerCase())
   )
 
   return (
@@ -137,7 +149,10 @@ export default function ListingsPage() {
             onChange={setSearchTerm}
             icon={<Search size={20} />}
           />
-          <Button onClick={() => setIsImportModalOpen(true)} className="bg-[#14161A] hover:bg-[#14161A]/90">
+          <Button
+            onClick={() => setIsImportModalOpen(true)}
+            className="bg-[#14161A] hover:bg-[#14161A]/90"
+          >
             <Plus className="mr-2 h-4 w-4" /> Import Listings
           </Button>
         </div>
@@ -149,8 +164,10 @@ export default function ListingsPage() {
           </div>
         ))}
       </div>
-      <ImportListingsModal isOpen={isImportModalOpen} onClose={() => setIsImportModalOpen(false)} />
+      <ImportListingsModal
+        isOpen={isImportModalOpen}
+        onClose={() => setIsImportModalOpen(false)}
+      />
     </div>
   )
 }
-

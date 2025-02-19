@@ -1,18 +1,33 @@
 "use client"
 
 import { useState } from "react"
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from "@/components/ui/dialog"
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  DialogDescription
+} from "@/components/ui/dialog"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue
+} from "@/components/ui/select"
 
 interface ImportListingsModalProps {
   isOpen: boolean
   onClose: () => void
 }
 
-export function ImportListingsModal({ isOpen, onClose }: ImportListingsModalProps) {
+export function ImportListingsModal({
+  isOpen,
+  onClose
+}: ImportListingsModalProps) {
   const [importMethod, setImportMethod] = useState("manual")
 
   const handleImport = () => {
@@ -27,7 +42,8 @@ export function ImportListingsModal({ isOpen, onClose }: ImportListingsModalProp
         <DialogHeader>
           <DialogTitle>Import Listings</DialogTitle>
           <DialogDescription>
-            Choose how you want to import your listings. You can either connect to a platform or enter details manually.
+            Choose how you want to import your listings. You can either connect
+            to a platform or enter details manually.
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
@@ -58,4 +74,3 @@ export function ImportListingsModal({ isOpen, onClose }: ImportListingsModalProp
     </Dialog>
   )
 }
-
