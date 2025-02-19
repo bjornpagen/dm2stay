@@ -7,7 +7,7 @@ import { SearchBar } from "@/components/search-bar"
 import { Search } from "lucide-react"
 
 interface ParsedConversation {
-  id: number
+  id: string
   customerName: string
   latestMessage: string
   timestamp: Date
@@ -23,7 +23,7 @@ const MASONRY_BREAKPOINTS = {
   640: 1
 }
 
-export function ConversationsPage(props: {
+export function Conversations(props: {
   conversations: Promise<ParsedConversation[]>
 }) {
   const conversations = React.use(props.conversations)

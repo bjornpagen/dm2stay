@@ -6,6 +6,7 @@ import { db } from "@/server/db"
 import { env } from "@/env"
 import { nextCookies } from "better-auth/next-js"
 import { headers } from "next/headers"
+import { redirect } from "next/navigation"
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -24,9 +25,18 @@ export const auth = betterAuth({
   }
 })
 
-export async function getSession() {
+async function getSession() {
   const reqHeaders = await headers()
   return auth.api.getSession({
     headers: reqHeaders
   })
+}
+
+export async function getUserId() {
+  const session = await getSession()
+  const userId = session?.user.id
+  if (!userId) {
+    redirect("/signin")
+  }
+  return userId
 }

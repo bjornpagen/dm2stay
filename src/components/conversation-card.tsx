@@ -3,7 +3,7 @@ import { Card, CardContent } from "@/components/ui/card"
 import { formatTimestamp } from "@/lib/utils"
 
 interface ConversationCardProps {
-  id: number
+  id: string
   customerName: string
   latestMessage: string
   timestamp: Date
