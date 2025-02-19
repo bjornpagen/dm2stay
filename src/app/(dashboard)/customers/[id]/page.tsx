@@ -86,16 +86,23 @@ export default function CustomerPage({
   )
 
   return (
-    <div className="space-y-6 md:space-y-8">
-      <React.Suspense>
-        <CustomerHeader customer={customer} />
-      </React.Suspense>
-      <React.Suspense>
-        <MessageTimeline messages={messages} />
-      </React.Suspense>
-      <React.Suspense>
-        <BookingSummary bookings={bookings} />
-      </React.Suspense>
+    <div className="container mx-auto px-4 py-6 max-w-[1600px]">
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+        <div className="lg:col-span-8 space-y-6">
+          <React.Suspense>
+            <MessageTimeline messages={messages} />
+          </React.Suspense>
+        </div>
+
+        <div className="lg:col-span-4 space-y-6">
+          <React.Suspense>
+            <CustomerHeader customer={customer} />
+          </React.Suspense>
+          <React.Suspense>
+            <BookingSummary bookings={bookings} />
+          </React.Suspense>
+        </div>
+      </div>
     </div>
   )
 }
