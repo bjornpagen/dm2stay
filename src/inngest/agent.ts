@@ -1,7 +1,7 @@
 import { inngest } from "@/inngest/client"
 import { openai, OPENAI_DEFAULT_MODEL } from "@/server/openai"
 import { db } from "@/server/db"
-import { eq, desc, and, ne, gte } from "drizzle-orm"
+import { eq, desc, and, ne, gte, asc } from "drizzle-orm"
 import * as schema from "@/server/db/schema"
 import type {
   ChatCompletionMessageToolCall,
@@ -210,7 +210,8 @@ export const messageReceived = inngest.createFunction(
       db
         .select({
           source: schema.message.source,
-          content: schema.message.content
+          content: schema.message.content,
+          createdAt: schema.message.createdAt
         })
         .from(schema.message)
         .where(
@@ -220,7 +221,7 @@ export const messageReceived = inngest.createFunction(
             ne(schema.message.id, messageId)
           )
         )
-        .orderBy(desc(schema.message.createdAt)),
+        .orderBy(asc(schema.message.createdAt)),
       db
         .select({
           id: schema.listing.id,
@@ -274,7 +275,7 @@ export const messageReceived = inngest.createFunction(
             eq(schema.toolCall.userId, userId)
           )
         )
-        .orderBy(desc(schema.toolCall.createdAt))
+        .orderBy(asc(schema.toolCall.createdAt))
     ])
     if (!prospect) {
       throw new Error("Prospect not found")
