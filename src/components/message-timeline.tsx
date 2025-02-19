@@ -3,16 +3,16 @@
 import * as React from "react"
 import { useState, type KeyboardEvent } from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuTrigger
-} from "@/components/ui/dropdown-menu"
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
 import { Mail, Send, MessageSquare, Instagram } from "lucide-react"
+import { cn } from "@/lib/utils"
 
 import type { Message } from "@/app/(dashboard)/customers/[id]/page"
 
@@ -39,20 +39,12 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
     "email" | "sms" | "instagram_dm" | "tiktok_dm"
   >("email")
 
-  const dummyData = {
-    sender: {
-      type: "host" as const,
-      name: "You",
-      avatar: "/host-avatar.jpg"
-    }
-  }
-
   const handleSend = () => {
     if (!newMessage.trim()) {
       return
     }
 
-    const newMessageObj = {
+    const newMessageObj: Message = {
       id: String(Date.now()),
       content: newMessage,
       source: sendMethod,
@@ -71,26 +63,21 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
   }
 
   const getMessageStyles = (source: Message["source"]) => {
-    const baseStyles = "max-w-[80%] rounded-lg px-4 py-2 shadow-sm"
+    const baseStyles = "max-w-md rounded-lg px-4 py-2 shadow-sm"
     switch (source) {
       case "user":
-        return `${baseStyles} bg-primary text-primary-foreground self-end`
+        return cn(baseStyles, "bg-primary text-primary-foreground ml-auto")
       case "ai":
-        return `${baseStyles} bg-secondary self-end`
+        return cn(baseStyles, "bg-secondary ml-auto")
       default:
-        return `${baseStyles} bg-background border border-border self-start`
+        return cn(baseStyles, "bg-background border border-border")
     }
   }
 
-  const sendMethodIcons = {
-    email: <Mail className="h-4 w-4" />,
-    sms: <MessageSquare className="h-4 w-4" />,
-    instagram_dm: <Instagram className="h-4 w-4" />,
-    tiktok_dm: (
-      <div className="h-4 w-4">
-        <TikTokIcon color="currentColor" />
-      </div>
-    )
+  const getMessageAlignment = (source: Message["source"]) => {
+    return source === "user" || source === "ai"
+      ? "justify-end"
+      : "justify-start"
   }
 
   return (
@@ -101,91 +88,121 @@ export function MessageTimeline(params: { messages: Promise<Message[]> }) {
       <CardContent className="flex-grow overflow-hidden flex flex-col">
         <div className="relative flex-grow overflow-y-auto mb-2 space-y-4 sm:space-y-6 px-1 h-[calc(100%-140px)]">
           {messages.map((message) => (
-            <div key={message.id} className="space-y-2">
-              <div
-                className={`flex items-center gap-2 ${message.source === "user" ? "justify-end" : ""}`}
-              >
-                <Avatar className="h-6 w-6">
-                  <AvatarImage src={dummyData.sender.avatar} />
-                  <AvatarFallback>
-                    {dummyData.sender.name.charAt(0)}
-                  </AvatarFallback>
-                </Avatar>
-                <span className="text-sm font-medium">
-                  {dummyData.sender.name}
-                </span>
+            <div key={message.id} className="flex flex-col">
+              <div className={getMessageStyles(message.source)}>
+                <p className="text-sm whitespace-pre-wrap">{message.content}</p>
               </div>
-              <div className="flex flex-col">
-                <div className={getMessageStyles(message.source)}>
-                  <p className="text-sm whitespace-pre-wrap">
-                    {message.content}
-                  </p>
-                </div>
-                <div
-                  className={`flex items-center gap-2 mt-1 ${message.source === "user" ? "justify-end" : "justify-start"}`}
-                >
-                  <span className="text-xs text-muted-foreground">
-                    {message.createdAt.toLocaleString()}
-                  </span>
-                  <span className="text-xs text-muted-foreground">•</span>
-                  <span className="text-xs text-muted-foreground capitalize flex items-center gap-1">
-                    {message.source}
-                  </span>
-                </div>
+              <div
+                className={cn(
+                  "flex items-center gap-2 mt-1",
+                  getMessageAlignment(message.source)
+                )}
+              >
+                <span className="text-xs text-muted-foreground">
+                  {message.createdAt.toLocaleString()}
+                </span>
+                <span className="text-xs text-muted-foreground">•</span>
+                <span className="text-xs text-muted-foreground capitalize flex items-center gap-1">
+                  {message.source.replace("_", " ")}
+                </span>
               </div>
             </div>
           ))}
         </div>
-        <div className="flex items-end gap-2">
-          <div className="flex-grow">
+        <div className="flex flex-col gap-2">
+          <div className="flex gap-1">
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={sendMethod === "email" ? "default" : "ghost"}
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setSendMethod("email")}
+                  >
+                    <Mail className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Send via Email</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={sendMethod === "sms" ? "default" : "ghost"}
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setSendMethod("sms")}
+                  >
+                    <MessageSquare className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Send via SMS</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={
+                      sendMethod === "instagram_dm" ? "default" : "ghost"
+                    }
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setSendMethod("instagram_dm")}
+                  >
+                    <Instagram className="h-4 w-4" />
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Send via Instagram DM</p>
+                </TooltipContent>
+              </Tooltip>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    variant={sendMethod === "tiktok_dm" ? "default" : "ghost"}
+                    size="icon"
+                    className="h-8 w-8"
+                    onClick={() => setSendMethod("tiktok_dm")}
+                  >
+                    <div className="h-4 w-4">
+                      <TikTokIcon color="currentColor" />
+                    </div>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Send via TikTok DM</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
+          </div>
+          <div className="relative">
             <Textarea
               placeholder="Type your message..."
               value={newMessage}
               onChange={(e) => setNewMessage(e.target.value)}
               onKeyDown={handleKeyDown}
-              className="min-h-[80px] resize-none"
+              className="min-h-[80px] resize-none pr-12"
             />
-          </div>
-          <div className="flex flex-col h-[80px]">
-            <DropdownMenu>
-              <DropdownMenuTrigger asChild>
-                <Button
-                  variant="outline"
-                  size="icon"
-                  className="rounded-b-none h-10 w-10"
-                >
-                  {sendMethodIcons[sendMethod]}
-                </Button>
-              </DropdownMenuTrigger>
-              <DropdownMenuContent align="end">
-                <DropdownMenuItem onClick={() => setSendMethod("email")}>
-                  <Mail className="mr-2 h-4 w-4" />
-                  <span>Email</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSendMethod("sms")}>
-                  <MessageSquare className="mr-2 h-4 w-4" />
-                  <span>SMS</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSendMethod("instagram_dm")}>
-                  <Instagram className="mr-2 h-4 w-4" />
-                  <span>Instagram</span>
-                </DropdownMenuItem>
-                <DropdownMenuItem onClick={() => setSendMethod("tiktok_dm")}>
-                  <div className="mr-2 h-4 w-4">
-                    <TikTokIcon color="currentColor" />
-                  </div>
-                  <span>TikTok</span>
-                </DropdownMenuItem>
-              </DropdownMenuContent>
-            </DropdownMenu>
-            <Button
-              onClick={handleSend}
-              size="icon"
-              className="rounded-t-none h-[70px] w-10"
-            >
-              <Send className="h-4 w-4" />
-              <span className="sr-only">Send message</span>
-            </Button>
+            <TooltipProvider>
+              <Tooltip>
+                <TooltipTrigger asChild>
+                  <Button
+                    onClick={handleSend}
+                    size="icon"
+                    className="absolute bottom-2 right-2 h-8 w-8"
+                  >
+                    <Send className="h-4 w-4" />
+                    <span className="sr-only">Send message</span>
+                  </Button>
+                </TooltipTrigger>
+                <TooltipContent>
+                  <p>Send message (Enter)</p>
+                </TooltipContent>
+              </Tooltip>
+            </TooltipProvider>
           </div>
         </div>
       </CardContent>
