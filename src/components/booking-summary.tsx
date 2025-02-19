@@ -1,3 +1,6 @@
+"use client"
+
+import * as React from "react"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { Calendar, Users } from "lucide-react"
@@ -32,7 +35,9 @@ function formatDateRange(start: Date, end: Date) {
   )
 }
 
-export function BookingSummary({ bookings }: { bookings: Booking[] }) {
+export function BookingSummary(params: { bookings: Promise<Booking[]> }) {
+  const bookings = React.use(params.bookings)
+
   return (
     <Card>
       <CardHeader>

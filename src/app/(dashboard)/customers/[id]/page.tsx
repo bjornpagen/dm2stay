@@ -9,50 +9,40 @@ import {
   mockBookings
 } from "@/lib/mock-data"
 
-async function CustomerProfileSection({
-  params
-}: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+async function getCustomer(id: string) {
   const customer = mockCustomerProfile
-
   if (!customer) {
     notFound()
   }
-
-  return <CustomerHeader customer={customer} />
+  return customer
 }
 
-async function MessagesSection({
+async function getMessages(id: string) {
+  return mockMessages
+}
+
+async function getBookings(id: string) {
+  return mockBookings
+}
+
+export default async function CustomerPage({
   params
 }: { params: Promise<{ id: string }> }) {
   const { id } = await params
-  const messages = mockMessages
+  const customer = getCustomer(id)
+  const messages = getMessages(id)
+  const bookings = getBookings(id)
 
-  return <MessageTimeline messages={messages} />
-}
-
-async function BookingsSection({
-  params
-}: { params: Promise<{ id: string }> }) {
-  const { id } = await params
-  const bookings = mockBookings
-
-  return <BookingSummary bookings={bookings} />
-}
-
-export default function CustomerPage({
-  params
-}: { params: Promise<{ id: string }> }) {
   return (
     <div className="space-y-6 md:space-y-8">
       <React.Suspense>
-        <CustomerProfileSection params={params} />
+        <CustomerHeader customer={customer} />
       </React.Suspense>
       <React.Suspense>
-        <MessagesSection params={params} />
+        <MessageTimeline messages={messages} />
       </React.Suspense>
       <React.Suspense>
-        <BookingsSection params={params} />
+        <BookingSummary bookings={bookings} />
       </React.Suspense>
     </div>
   )

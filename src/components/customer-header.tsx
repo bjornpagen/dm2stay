@@ -1,17 +1,15 @@
+"use client"
+
+import * as React from "react"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
 import { Badge } from "@/components/ui/badge"
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
-import {
-  Calendar,
-  MapPin,
-  Phone,
-  Mail,
-  Clock,
-  CreditCard,
-} from "lucide-react"
+import { Calendar, MapPin, Phone, Mail, Clock, CreditCard } from "lucide-react"
 import type { CustomerProfile } from "@/types/customer"
 
-export function CustomerHeader({ customer }: { customer: CustomerProfile }) {
+export function CustomerHeader(params: { customer: Promise<CustomerProfile> }) {
+  const customer = React.use(params.customer)
+
   return (
     <Card className="shadow-lg">
       <CardHeader className="pb-4">
