@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import * as React from "react"
 import Link from "next/link"
 import {
   Table,
@@ -13,14 +13,15 @@ import {
 import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { ChevronLeft, ChevronRight } from "lucide-react"
-import type { CustomerListItem } from "@/types/customer"
+import { formatDistanceToNow } from "date-fns"
 
+import type { Customer } from "@/app/(dashboard)/customers/page"
 interface CustomerTableProps {
-  customers: CustomerListItem[]
+  customers: Customer[]
 }
 
 export function CustomerTable({ customers }: CustomerTableProps) {
-  const [currentPage, setCurrentPage] = useState(1)
+  const [currentPage, setCurrentPage] = React.useState(1)
   const itemsPerPage = 10
   const totalPages = Math.ceil(customers.length / itemsPerPage)
 
@@ -56,7 +57,11 @@ export function CustomerTable({ customers }: CustomerTableProps) {
               <TableCell>{customer.email}</TableCell>
               <TableCell>{customer.totalBookings}</TableCell>
               <TableCell>${customer.totalSpent.toLocaleString()}</TableCell>
-              <TableCell>{customer.lastActive.toLocaleDateString()}</TableCell>
+              <TableCell>
+                {formatDistanceToNow(customer.lastActive, {
+                  addSuffix: true
+                })}
+              </TableCell>
               <TableCell>
                 <Badge
                   variant={

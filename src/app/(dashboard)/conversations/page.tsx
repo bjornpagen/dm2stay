@@ -9,9 +9,7 @@ import { Conversations } from "@/components/conversations-page"
 const latestMessage = db
   .select({
     prospectId: schema.message.prospectId,
-    maxCreatedAt: sql<Date>`MAX(${schema.message.createdAt})`.as(
-      "max_created_at"
-    )
+    maxCreatedAt: sql`MAX(${schema.message.createdAt})`.as("max_created_at")
   })
   .from(schema.message)
   .where(

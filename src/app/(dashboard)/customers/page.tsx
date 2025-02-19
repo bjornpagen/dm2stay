@@ -1,59 +1,56 @@
-"use client"
+import * as React from "react"
+import { db } from "@/server/db"
+import { desc, eq, sql, and } from "drizzle-orm"
+import * as schema from "@/server/db/schema"
+import { CustomersPage } from "@/components/customers-page"
+import { getUserId } from "@/server/auth"
 
-import { useState } from "react"
-import { CustomerTable } from "@/components/customer-table"
-import { Input } from "@/components/ui/input"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
-import { mockCustomerList } from "@/lib/mock-customer-list"
-
-export default function CustomersPage() {
-  const [searchTerm, setSearchTerm] = useState("")
-  const [statusFilter, setStatusFilter] = useState<
-    "all" | "active" | "inactive"
-  >("all")
-
-  const filteredCustomers = mockCustomerList.filter((customer) => {
-    const matchesSearch =
-      customer.name.toLowerCase().includes(searchTerm.toLowerCase()) ||
-      customer.email.toLowerCase().includes(searchTerm.toLowerCase())
-    const matchesStatus =
-      statusFilter === "all" || customer.status === statusFilter
-    return matchesSearch && matchesStatus
+const getCustomers = db
+  .select({
+    id: schema.prospect.id,
+    name: sql<string>`COALESCE(${schema.prospect.name}, 'Unnamed Customer')`,
+    email: sql<string>`COALESCE(${schema.prospect.email}, 'No email')`,
+    status: sql<"active" | "inactive">`CASE
+      WHEN EXISTS (
+        SELECT 1 FROM ${schema.booking}
+        WHERE ${schema.booking.prospectId} = ${schema.prospect.id}
+        AND ${schema.booking.paymentAt} IS NOT NULL
+      ) THEN 'active'::text
+      ELSE 'inactive'::text
+    END`,
+    totalBookings: sql<number>`COALESCE(
+      (
+        SELECT COUNT(*)
+        FROM ${schema.booking}
+        WHERE ${schema.booking.prospectId} = ${schema.prospect.id}
+        AND ${schema.booking.paymentAt} IS NOT NULL
+      ),
+      0
+    )`,
+    totalSpent: sql<number>`0`,
+    lastActive: sql<Date>`MAX(${schema.message.createdAt})`
   })
+  .from(schema.prospect)
+  .innerJoin(
+    schema.message,
+    and(
+      eq(schema.message.prospectId, schema.prospect.id),
+      eq(schema.message.userId, sql.placeholder("userId"))
+    )
+  )
+  .groupBy(schema.prospect.id)
+  .orderBy(desc(schema.prospect.createdAt))
+  .prepare("get_customers")
+
+export type Customer = Awaited<ReturnType<typeof getCustomers.execute>>[number]
+
+export default function Page() {
+  const userId = getUserId()
+  const customers = userId.then((userId) => getCustomers.execute({ userId }))
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Customers</h1>
-      <div className="flex items-center space-x-4">
-        <Input
-          placeholder="Search customers..."
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-          className="max-w-sm"
-        />
-        <Select
-          value={statusFilter}
-          onValueChange={(value: "all" | "active" | "inactive") =>
-            setStatusFilter(value)
-          }
-        >
-          <SelectTrigger className="w-[180px]">
-            <SelectValue placeholder="Filter by status" />
-          </SelectTrigger>
-          <SelectContent>
-            <SelectItem value="all">All Customers</SelectItem>
-            <SelectItem value="active">Active</SelectItem>
-            <SelectItem value="inactive">Inactive</SelectItem>
-          </SelectContent>
-        </Select>
-      </div>
-      <CustomerTable customers={filteredCustomers} />
-    </div>
+    <React.Suspense>
+      <CustomersPage customers={customers} />
+    </React.Suspense>
   )
 }
