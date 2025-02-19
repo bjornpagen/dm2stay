@@ -54,7 +54,6 @@ async function handleFinalizeBooking(
   const booking = await db
     .insert(schema.booking)
     .values({
-      id: createId(),
       prospectId,
       listingId: args.listingId,
       checkIn: new Date(args.checkIn),
@@ -186,75 +185,97 @@ export const messageReceived = inngest.createFunction(
     }
     const { prospectId, userId, content } = message
 
-    const [prospect, previousMessages, listings, activeBooking] =
-      await Promise.all([
-        db
-          .select({
-            id: schema.prospect.id,
-            name: schema.prospect.name,
-            email: schema.prospect.email,
-            phone: schema.prospect.phone,
-            instagramHandle: schema.prospect.instagramHandle,
-            tiktokHandle: schema.prospect.tiktokHandle,
-            createdAt: schema.prospect.createdAt,
-            updatedAt: schema.prospect.updatedAt
-          })
-          .from(schema.prospect)
-          .where(eq(schema.prospect.id, prospectId))
-          .limit(1)
-          .then((rows) => rows[0]),
-        db
-          .select({
-            source: schema.message.source,
-            content: schema.message.content
-          })
-          .from(schema.message)
-          .where(
-            and(
-              eq(schema.message.prospectId, prospectId),
-              ne(schema.message.id, messageId)
+    const [
+      prospect,
+      previousMessages,
+      listings,
+      activeBooking,
+      toolCallsHistory
+    ] = await Promise.all([
+      db
+        .select({
+          id: schema.prospect.id,
+          name: schema.prospect.name,
+          email: schema.prospect.email,
+          phone: schema.prospect.phone,
+          instagramHandle: schema.prospect.instagramHandle,
+          tiktokHandle: schema.prospect.tiktokHandle,
+          createdAt: schema.prospect.createdAt,
+          updatedAt: schema.prospect.updatedAt
+        })
+        .from(schema.prospect)
+        .where(eq(schema.prospect.id, prospectId))
+        .limit(1)
+        .then((rows) => rows[0]),
+      db
+        .select({
+          source: schema.message.source,
+          content: schema.message.content
+        })
+        .from(schema.message)
+        .where(
+          and(
+            eq(schema.message.prospectId, prospectId),
+            eq(schema.message.userId, userId),
+            ne(schema.message.id, messageId)
+          )
+        )
+        .orderBy(desc(schema.message.createdAt)),
+      db
+        .select({
+          id: schema.listing.id,
+          defaultDailyPrice: schema.listing.defaultDailyPrice,
+          defaultWeeklyPrice: schema.listing.defaultWeeklyPrice,
+          defaultMonthlyPrice: schema.listing.defaultMonthlyPrice,
+          airbnbData: schema.airbnbListing.data
+        })
+        .from(schema.listing)
+        .where(eq(schema.listing.userId, userId))
+        .innerJoin(
+          schema.airbnbListing,
+          eq(schema.listing.airbnbId, schema.airbnbListing.airbnbId)
+        )
+        .orderBy(desc(schema.listing.createdAt)),
+      db
+        .select({
+          createdAt: schema.booking.createdAt,
+          updatedAt: schema.booking.updatedAt,
+          listingId: schema.booking.listingId,
+          prospectId: schema.booking.prospectId,
+          checkIn: schema.booking.checkIn,
+          checkOut: schema.booking.checkOut,
+          paymentAt: schema.booking.paymentAt
+        })
+        .from(schema.booking)
+        .where(
+          and(
+            eq(schema.booking.prospectId, prospectId),
+            gte(
+              schema.booking.createdAt,
+              new Date(Date.now() - 24 * 60 * 60 * 1000)
             )
           )
-          .orderBy(desc(schema.message.createdAt)),
-        db
-          .select({
-            id: schema.listing.id,
-            defaultDailyPrice: schema.listing.defaultDailyPrice,
-            defaultWeeklyPrice: schema.listing.defaultWeeklyPrice,
-            defaultMonthlyPrice: schema.listing.defaultMonthlyPrice,
-            airbnbData: schema.airbnbListing.data
-          })
-          .from(schema.listing)
-          .where(eq(schema.listing.userId, userId))
-          .innerJoin(
-            schema.airbnbListing,
-            eq(schema.listing.airbnbId, schema.airbnbListing.airbnbId)
+        )
+        .orderBy(desc(schema.booking.createdAt))
+        .limit(1)
+        .then((rows) => rows[0]),
+      db
+        .select({
+          openaiId: schema.toolCall.openaiId,
+          functionName: schema.toolCall.functionName,
+          functionArgs: schema.toolCall.functionArgs,
+          result: schema.toolCall.result,
+          createdAt: schema.toolCall.createdAt
+        })
+        .from(schema.toolCall)
+        .where(
+          and(
+            eq(schema.toolCall.prospectId, prospectId),
+            eq(schema.toolCall.userId, userId)
           )
-          .orderBy(desc(schema.listing.createdAt)),
-        db
-          .select({
-            createdAt: schema.booking.createdAt,
-            updatedAt: schema.booking.updatedAt,
-            listingId: schema.booking.listingId,
-            prospectId: schema.booking.prospectId,
-            checkIn: schema.booking.checkIn,
-            checkOut: schema.booking.checkOut,
-            paymentAt: schema.booking.paymentAt
-          })
-          .from(schema.booking)
-          .where(
-            and(
-              eq(schema.booking.prospectId, prospectId),
-              gte(
-                schema.booking.createdAt,
-                new Date(Date.now() - 24 * 60 * 60 * 1000)
-              )
-            )
-          )
-          .orderBy(desc(schema.booking.createdAt))
-          .limit(1)
-          .then((rows) => rows[0])
-      ])
+        )
+        .orderBy(desc(schema.toolCall.createdAt))
+    ])
     if (!prospect) {
       throw new Error("Prospect not found")
     }
@@ -290,6 +311,11 @@ Respond in a friendly, natural manner, as in a real conversation. When needed, s
             : ("assistant" as const),
         content: msg.content
       })),
+      ...toolCallsHistory.map((tc) => ({
+        role: "tool" as const,
+        tool_call_id: tc.openaiId,
+        content: `${tc.functionName}: args ${JSON.stringify(tc.functionArgs)} returned ${tc.result}`
+      })),
       {
         role: "user" as const,
         content
@@ -322,43 +348,34 @@ Respond in a friendly, natural manner, as in a real conversation. When needed, s
           content
         }))
 
-    let aiMessages = aiMessage.content ? parseAiMessages(aiMessage.content) : []
+    const aiMessages = aiMessage.content
+      ? parseAiMessages(aiMessage.content)
+      : []
 
     if (aiMessage.tool_calls?.length) {
       const toolResults = await handleToolCalls(
         aiMessage.tool_calls,
         prospect.id
       )
-
       if (toolResults.length !== aiMessage.tool_calls.length) {
         throw new Error("Tool results length mismatch")
       }
 
-      const toolMessages = aiMessage.tool_calls.map((toolCall, i) => ({
-        role: "assistant" as const,
-        content: toolResults[i],
-        tool_call_id: toolCall.id,
-        name: toolCall.function.name,
-        arguments: toolCall.function.arguments
-      }))
+      await db.insert(schema.toolCall).values(
+        aiMessage.tool_calls.map((toolCall, i) => ({
+          openaiId: toolCall.id,
+          prospectId: prospect.id,
+          userId: message.userId,
+          functionName: toolCall.function.name,
+          functionArgs: JSON.parse(toolCall.function.arguments),
+          result: toolResults[i] ?? "Error: No result"
+        }))
+      )
 
-      const finalResponse = await openai.chat.completions.create({
-        model: OPENAI_DEFAULT_MODEL,
-        messages: [...messages, ...aiMessages, ...toolMessages],
-        tools,
-        tool_choice: "auto"
+      return await inngest.send({
+        name: "agent/message.received",
+        data: { messageId: event.data.messageId }
       })
-
-      if (!finalResponse.choices.length) {
-        throw new Error("OpenAI returned no choices in final response")
-      }
-
-      const finalAiMessage = finalResponse.choices[0]?.message
-      if (!finalAiMessage?.content) {
-        throw new Error("OpenAI returned empty message content")
-      }
-
-      aiMessages = parseAiMessages(finalAiMessage.content)
     }
 
     if (aiMessages.length === 0) {

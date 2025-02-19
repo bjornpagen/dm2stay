@@ -379,5 +379,44 @@ export const bookingRelations = relations(booking, ({ one }) => ({
 
 export const prospectRelations = relations(prospect, ({ many }) => ({
   bookings: many(booking),
-  messages: many(message)
+  messages: many(message),
+  toolCalls: many(toolCall)
+}))
+
+export const toolCall = schema.table(
+  "tool_call",
+  {
+    openaiId: text("openai_id").primaryKey().notNull(),
+    prospectId: text("prospect_id")
+      .notNull()
+      .references(() => prospect.id),
+    userId: text("user_id")
+      .notNull()
+      .references(() => user.id),
+    functionName: text("function_name").notNull(),
+    functionArgs: jsonb("function_args").notNull(),
+    result: text("result").notNull(),
+    createdAt: timestamp("created_at", { withTimezone: false })
+      .notNull()
+      .$defaultFn(() => new Date()),
+    updatedAt: timestamp("updated_at", { withTimezone: false })
+      .notNull()
+      .$defaultFn(() => new Date())
+      .$onUpdateFn(() => new Date())
+  },
+  (table) => ({
+    prospectIdIdx: index("tool_call_prospect_id_idx").on(table.prospectId),
+    userIdIdx: index("tool_call_user_idx").on(table.userId)
+  })
+)
+
+export const toolCallRelations = relations(toolCall, ({ one }) => ({
+  prospect: one(prospect, {
+    fields: [toolCall.prospectId],
+    references: [prospect.id]
+  }),
+  user: one(user, {
+    fields: [toolCall.userId],
+    references: [user.id]
+  })
 }))
