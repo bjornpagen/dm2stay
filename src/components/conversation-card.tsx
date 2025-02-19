@@ -13,14 +13,14 @@ export function ConversationCard({
   return (
     <Link href={`/customers/${id}`}>
       <Card className="mb-4 cursor-pointer hover:shadow-md transition-all duration-150">
-        <CardContent className="flex flex-col p-4 space-y-1">
+        <CardContent className="flex flex-col p-6 space-y-2">
           <div className="flex justify-between items-start">
             <p className="text-sm font-medium">{customerName}</p>
             <p className="text-xs text-muted-foreground">
               {formatTimestamp(timestamp)}
             </p>
           </div>
-          <p className="text-sm text-muted-foreground line-clamp-2">
+          <p className="text-sm text-muted-foreground line-clamp-4">
             {latestMessage}
           </p>
         </CardContent>

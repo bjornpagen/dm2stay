@@ -10,10 +10,10 @@ import { SearchBar } from "@/components/search-bar"
 import type { Conversation } from "@/app/(dashboard)/conversations/page"
 
 const MASONRY_BREAKPOINTS = {
-  default: 6,
-  1920: 6,
-  1536: 5,
-  1280: 4,
+  default: 4,
+  1920: 4,
+  1536: 4,
+  1280: 3,
   1024: 3,
   768: 2,
   640: 1
