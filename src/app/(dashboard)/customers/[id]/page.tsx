@@ -25,10 +25,10 @@ async function getBookings(id: string) {
   return mockBookings
 }
 
-export default async function CustomerPage({
+export default function CustomerPage({
   params
 }: { params: Promise<{ id: string }> }) {
-  const { id } = await params
+  const { id } = React.use(params)
   const customer = getCustomer(id)
   const messages = getMessages(id)
   const bookings = getBookings(id)
