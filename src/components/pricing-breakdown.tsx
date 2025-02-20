@@ -14,6 +14,7 @@ import {
   TooltipTrigger
 } from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
+import { formatPrice } from "@/server/format"
 
 interface PricingBreakdownProps {
   pricing: {
@@ -44,14 +45,6 @@ export function PricingBreakdown({
   } | null>(null)
   const [isApplying, setIsApplying] = useState(false)
   const [error, setError] = useState<string | null>(null)
-
-  const formatPrice = (cents: number) => {
-    const dollars = cents / 100
-    return new Intl.NumberFormat("en-US", {
-      minimumFractionDigits: 2,
-      maximumFractionDigits: 2
-    }).format(dollars)
-  }
 
   const subtotal = stayDetails.basePrice
   const total =

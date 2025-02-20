@@ -5,6 +5,7 @@ import { Badge } from "@/components/ui/badge"
 import { Star } from "lucide-react"
 import { OccupancyChart } from "@/components/occupancy-chart"
 import type { ListingData } from "@/server/types"
+import { formatPrice } from "@/server/format"
 
 interface ListingCardProps {
   id: string
@@ -66,16 +67,20 @@ export function ListingCard({
               </div>
               <div className="text-right space-y-2">
                 <div className="space-y-1">
-                  <p className="text-lg font-semibold">${defaultDailyPrice}</p>
+                  <p className="text-lg font-semibold">
+                    ${formatPrice(defaultDailyPrice)}
+                  </p>
                   <p className="text-sm text-muted-foreground">per night</p>
                 </div>
                 <div className="space-y-1">
-                  <p className="text-lg font-semibold">${defaultWeeklyPrice}</p>
+                  <p className="text-lg font-semibold">
+                    ${formatPrice(defaultWeeklyPrice)}
+                  </p>
                   <p className="text-sm text-muted-foreground">per week</p>
                 </div>
                 <div className="space-y-1">
                   <p className="text-lg font-semibold">
-                    ${defaultMonthlyPrice}
+                    ${formatPrice(defaultMonthlyPrice)}
                   </p>
                   <p className="text-sm text-muted-foreground">per month</p>
                 </div>

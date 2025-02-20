@@ -110,3 +110,11 @@ export function getBookingStatus(booking: {
 
   return "upcoming" as const
 }
+
+export const formatPrice = (cents: number) => {
+  const dollars = cents / 100
+  return new Intl.NumberFormat("en-US", {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2
+  }).format(dollars)
+}

@@ -57,10 +57,9 @@ export default function TestPage() {
     sendingRef.current = true
     setIsSending(true)
     try {
-      const newMessage = await sendTestMessage(trimmedMessage)
-      if (newMessage) {
-        setMessages((prev) => [...prev, newMessage])
-      }
+      await sendTestMessage(trimmedMessage)
+      const messages = await getTestMessages()
+      setMessages(messages)
     } catch (error) {
       console.error("Failed to send message:", error)
       setMessage(trimmedMessage)

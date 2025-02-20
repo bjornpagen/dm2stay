@@ -93,7 +93,7 @@ async function handleCreateBookingIntent(
   const baseUrl = env.VERCEL_URL
     ? `https://${env.VERCEL_URL}`
     : "http://localhost:3000"
-  const checkoutUrl = `${baseUrl}/checkout/${booking.id}`
+  const checkoutUrl = `${baseUrl}/checkout/${booking.listingId}`
 
   const messageId = createId()
   await db.insert(schema.message).values({
@@ -340,8 +340,26 @@ ${formatBookingStatus(activeBooking)}
 ${formatBookingFocus(activeBooking)}
 
 When booking details are provided, immediately invoke createBookingIntentAndSendCheckoutLink to record the booking.
-Always respond in plain text without any markdown formatting or special characters.
-Respond in a friendly, natural manner, as in a real conversation. When needed, split your response into multiple short messages using a single newline "\\n" solely for message separation.`
+
+RESPONSE RULES:
+- Never use any formatting (no markdown, bullets, numbers, or special characters)
+- Keep each message under 160 characters
+- Never send more than 3 messages total
+- Use a single newline "\\n" to separate messages
+- Always write in plain conversational text
+- Never use lists or enumerations
+
+Example good response:
+"Villa Kaamos is a beautiful mountain retreat where you can watch the Northern Lights right from the living room.\\n
+The villa includes a cozy sauna and fireplace, plus easy access to hiking and ski trails. What would you like to know more about?"
+
+Example bad response (never do this):
+"Here are the activities:
+1. Skiing
+2. Hiking
+3. Sauna
+Let me know what interests you!"
+`
     }
 
     const conversationHistory = [
