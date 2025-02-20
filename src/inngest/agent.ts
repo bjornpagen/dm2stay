@@ -230,7 +230,7 @@ export const messageReceived = inngest.createFunction(
       previousMessages,
       listings,
       activeBooking,
-      toolCallsHistory
+      _toolCallsHistory
     ] = await Promise.all([
       db
         .select({
@@ -375,7 +375,7 @@ Let me know what interests you!"
         content: msg.content,
         createdAt: msg.createdAt
       })),
-      // ...toolCallsHistory.map((tc) => ({
+      // ..._toolCallsHistory.map((tc) => ({
       //   role: "tool" as const,
       //   tool_call_id: tc.openaiId,
       //   content: `${tc.functionName}: args ${JSON.stringify(tc.functionArgs)} returned ${tc.result}`,

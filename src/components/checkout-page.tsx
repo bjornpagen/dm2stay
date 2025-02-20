@@ -7,11 +7,16 @@ import { CheckoutForm } from "@/components/checkout-form"
 import { PropertyDetails } from "@/components/property-details"
 import { PricingBreakdown } from "@/components/pricing-breakdown"
 import type { Booking } from "@/app/(dashboard)/checkout/[id]/page"
+import { redirect } from "next/navigation"
 
 export function CheckoutPage(params: {
   booking: Promise<Booking>
 }) {
   const booking = React.use(params.booking)
+  if (!booking.listing.data) {
+    return redirect("/")
+  }
+
   const [checkIn, setCheckIn] = useState<Date | undefined>(
     booking.checkIn ? new Date(booking.checkIn) : undefined
   )

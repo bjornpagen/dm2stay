@@ -39,7 +39,7 @@ export function AuthForm({ type }: AuthFormProps) {
         throw new Error(error.message)
       }
 
-      redirect("/dashboard")
+      redirect("/conversations")
     } else {
       const name = formData.get("name") as string
       const { error } = await authClient.signUp.email({
@@ -52,7 +52,7 @@ export function AuthForm({ type }: AuthFormProps) {
         throw new Error(error.message)
       }
 
-      redirect("/dashboard")
+      redirect("/conversations")
     }
   }
 
