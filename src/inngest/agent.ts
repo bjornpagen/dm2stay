@@ -1,153 +1,20 @@
 import { inngest } from "@/inngest/client"
 import { openai, OPENAI_DEFAULT_MODEL } from "@/server/openai"
 import { db } from "@/server/db"
-import { eq, desc, and, ne, gte, asc, isNull } from "drizzle-orm"
+import { eq, desc, and, ne, gte, asc } from "drizzle-orm"
 import * as schema from "@/server/db/schema"
 import type {
   ChatCompletionMessageToolCall,
   ChatCompletionTool
 } from "openai/resources/chat/completions"
 import { createId } from "@paralleldrive/cuid2"
-import { z } from "zod"
 import {
   formatBookingStatus,
   formatBookingFocus,
   formatProspectInfo,
   formatListingInfo
 } from "@/server/format"
-import { env } from "@/env"
-
-const storeGuestInfoSchema = z.object({
-  name: z.string().nullable(),
-  email: z.string().nullable()
-})
-
-const createBookingIntentSchema = z.object({
-  listingId: z.string(),
-  checkIn: z.string(),
-  checkOut: z.string()
-})
-
-type StoreGuestInfoArgs = z.infer<typeof storeGuestInfoSchema>
-type CreateBookingIntentArgs = z.infer<typeof createBookingIntentSchema>
-
-async function handleStoreGuestInfo(
-  args: StoreGuestInfoArgs,
-  prospectId: string
-) {
-  await db
-    .update(schema.prospect)
-    .set({
-      name: args.name ?? undefined,
-      email: args.email ?? undefined
-    })
-    .where(eq(schema.prospect.id, prospectId))
-
-  return "Guest info updated"
-}
-
-async function handleCreateBookingIntent(
-  args: CreateBookingIntentArgs,
-  prospectId: string
-) {
-  const listing = await db
-    .select({
-      userId: schema.listing.userId
-    })
-    .from(schema.listing)
-    .where(eq(schema.listing.id, args.listingId))
-    .limit(1)
-    .then((rows) => rows[0])
-  if (!listing) {
-    throw new Error("Listing not found")
-  }
-
-  const booking = await db
-    .insert(schema.booking)
-    .values({
-      prospectId,
-      listingId: args.listingId,
-      checkIn: new Date(args.checkIn),
-      checkOut: new Date(args.checkOut)
-    })
-    .onConflictDoUpdate({
-      target: schema.booking.id,
-      where: and(
-        eq(schema.booking.prospectId, prospectId),
-        eq(schema.booking.listingId, args.listingId),
-        isNull(schema.booking.paymentAt)
-      ),
-      set: {
-        checkIn: new Date(args.checkIn),
-        checkOut: new Date(args.checkOut),
-        updatedAt: new Date()
-      }
-    })
-    .returning()
-    .then((rows) => rows[0])
-
-  if (!booking) {
-    throw new Error("Failed to create booking")
-  }
-
-  const baseUrl = env.VERCEL_URL
-    ? `https://${env.VERCEL_URL}`
-    : "http://localhost:3000"
-  const checkoutUrl = `${baseUrl}/checkout/${booking.listingId}`
-
-  const messageId = createId()
-  await db.insert(schema.message).values({
-    id: messageId,
-    source: "ai",
-    content: checkoutUrl,
-    prospectId: prospectId,
-    userId: listing.userId
-  })
-
-  await inngest.send({
-    name: "agent/message.generated",
-    data: { messageIds: [messageId] }
-  })
-
-  return "Booking intent created and checkout link sent"
-}
-
-async function handleToolCalls(
-  toolCalls: ChatCompletionMessageToolCall[],
-  prospectId: string
-) {
-  return Promise.all(
-    toolCalls.map(async (toolCall) => {
-      if (toolCall.type !== "function") {
-        throw new Error(`Unexpected tool call type: ${toolCall.type}`)
-      }
-
-      const rawArgs = JSON.parse(toolCall.function.arguments)
-      switch (toolCall.function.name) {
-        case "storeGuestInfo": {
-          const result = storeGuestInfoSchema.safeParse(rawArgs)
-          if (!result.success) {
-            throw new Error(
-              `Invalid storeGuestInfo args: ${result.error.message}`
-            )
-          }
-          return handleStoreGuestInfo(result.data, prospectId)
-        }
-        case "createBookingIntentAndSendCheckoutLink": {
-          const result = createBookingIntentSchema.safeParse(rawArgs)
-          if (!result.success) {
-            throw new Error(
-              `Invalid createBookingIntent args: ${result.error.message}`
-            )
-          }
-          return handleCreateBookingIntent(result.data, prospectId)
-        }
-        default:
-          throw new Error(`Unexpected function call: ${toolCall.function.name}`)
-      }
-    })
-  )
-}
+import { storeGuestInfo, createBookingIntent } from "@/inngest/guest"
 
 const tools: ChatCompletionTool[] = [
   {
@@ -178,7 +45,7 @@ const tools: ChatCompletionTool[] = [
     function: {
       name: "createBookingIntentAndSendCheckoutLink",
       description:
-        "Create a booking intent and automatically send the checkout link to the guest. The checkout link will be sent immediately after calling this function. This is safe to call multiple times.",
+        "Create a booking intent and automatically send the checkout link to the guest. The link will be sent both through the conversation and via email if the guest's email is set. This is safe to call multiple times.",
       parameters: {
         type: "object",
         properties: {
@@ -206,7 +73,7 @@ const tools: ChatCompletionTool[] = [
 export const messageReceived = inngest.createFunction(
   { id: "agent-message-received" },
   { event: "agent/message.received" },
-  async ({ event }) => {
+  async ({ event, step }) => {
     const { messageId } = event.data
 
     const message = await db
@@ -346,6 +213,15 @@ CRITICAL RESPONSE REQUIREMENTS:
 3. Keep each message under 160 characters
 4. Use exactly one line break between messages
 5. No message grouping or batching - each thought must be its own message
+6. NEVER send links manually - booking links are handled automatically by the tools
+7. If a link needs to be re-sent, call the createBookingIntentAndSendCheckoutLink tool with the same parameters
+8. Try to collect guest name and email using storeGuestInfo before sending booking links when possible
+
+GUEST INFO COLLECTION:
+- If name or email is missing, naturally work it into the conversation
+- Use storeGuestInfo tool when guest provides their information
+- Don't be pushy about collecting info - keep it conversational
+- Always proceed with booking link if guest is ready, regardless of info status
 
 MESSAGE STRUCTURE:
 - First message: Key information or answer
@@ -354,10 +230,11 @@ MESSAGE STRUCTURE:
 
 COMMUNICATION PRIORITIES:
 1. Build trust through expertise and transparency
-2. Guide naturally toward booking completion
-3. Create appropriate urgency through value
-4. Make the booking process feel simple
-5. Address concerns while maintaining momentum
+2. Collect guest contact info naturally when possible
+3. Guide naturally toward booking completion
+4. Create appropriate urgency through value
+5. Make the booking process feel simple
+6. Address concerns while maintaining momentum
 
 STYLE GUIDELINES:
 - Professional and warm
@@ -371,7 +248,8 @@ AVOID:
 - More than 3 messages
 - Any use of emoji
 - Vague or indirect language
-- Aggressive sales tactics`
+- Aggressive sales tactics
+- Manually sending any links or URLs`
     }
 
     const conversationHistory = [
@@ -441,24 +319,59 @@ AVOID:
         toolCalls: aiMessage.tool_calls
       })
 
-      const toolResults = await handleToolCalls(
-        aiMessage.tool_calls,
-        prospect.id
-      )
-      if (toolResults.length !== aiMessage.tool_calls.length) {
-        throw new Error("Tool results length mismatch")
-      }
-
       await db.insert(schema.toolCall).values(
-        aiMessage.tool_calls.map((toolCall, i) => ({
+        aiMessage.tool_calls.map((toolCall) => ({
           openaiId: toolCall.id,
           prospectId: prospect.id,
           userId: message.userId,
           functionName: toolCall.function.name,
           functionArgs: JSON.parse(toolCall.function.arguments),
-          result: toolResults[i] ?? "Error: No result"
+          result: "Tool called successfully"
         }))
       )
+
+      const results = await Promise.all(
+        aiMessage.tool_calls.map(async (toolCall) => {
+          if (toolCall.type !== "function") {
+            throw new Error(`Unexpected tool call type: ${toolCall.type}`)
+          }
+
+          const args = JSON.parse(toolCall.function.arguments)
+          switch (toolCall.function.name) {
+            case "storeGuestInfo": {
+              await step.invoke("store-guest-info", {
+                function: storeGuestInfo,
+                data: {
+                  prospectId: prospect.id,
+                  name: args.name,
+                  email: args.email
+                }
+              })
+              return "Guest info updated"
+            }
+            case "createBookingIntentAndSendCheckoutLink": {
+              await step.invoke("create-booking-intent", {
+                function: createBookingIntent,
+                data: {
+                  prospectId: prospect.id,
+                  listingId: args.listingId,
+                  checkIn: args.checkIn,
+                  checkOut: args.checkOut
+                }
+              })
+              return "Booking intent created and checkout link sent"
+            }
+            default:
+              throw new Error(
+                `Unexpected function call: ${toolCall.function.name}`
+              )
+          }
+        })
+      )
+
+      if (results.length !== aiMessage.tool_calls.length) {
+        throw new Error("Tool results length mismatch")
+      }
 
       await inngest.send({
         name: "agent/message.generated",

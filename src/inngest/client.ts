@@ -17,6 +17,21 @@ const events = {
       messageIds: z.array(z.string())
     })
   },
+  "agent/guest.store": {
+    data: z.object({
+      prospectId: z.string(),
+      name: z.string().nullable(),
+      email: z.string().nullable()
+    })
+  },
+  "agent/booking.create": {
+    data: z.object({
+      prospectId: z.string(),
+      listingId: z.string(),
+      checkIn: z.string(),
+      checkOut: z.string()
+    })
+  },
   "apify/scrape.queued": {
     data: z.object({
       airbnbId: z.string()
