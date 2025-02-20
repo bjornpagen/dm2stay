@@ -280,7 +280,9 @@ export const messageReceived = inngest.createFunction(
           prospectId: schema.booking.prospectId,
           checkIn: schema.booking.checkIn,
           checkOut: schema.booking.checkOut,
-          paymentAt: schema.booking.paymentAt
+          paymentAt: schema.booking.paymentAt,
+          stickerPrice: schema.booking.stickerPrice,
+          guestCount: schema.booking.guestCount
         })
         .from(schema.booking)
         .where(

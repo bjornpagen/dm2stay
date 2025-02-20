@@ -25,9 +25,9 @@ const getListings = db
 
 export type Listing = {
   id: string
-  defaultDailyPrice: number | null
-  defaultWeeklyPrice: number | null
-  defaultMonthlyPrice: number | null
+  defaultDailyPrice: number
+  defaultWeeklyPrice: number
+  defaultMonthlyPrice: number
   data: ListingData | null
 }
 

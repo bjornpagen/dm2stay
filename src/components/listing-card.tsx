@@ -9,9 +9,9 @@ import type { ListingData } from "@/server/types"
 interface ListingCardProps {
   id: string
   data: ListingData
-  defaultDailyPrice: number | null
-  defaultWeeklyPrice: number | null
-  defaultMonthlyPrice: number | null
+  defaultDailyPrice: number
+  defaultWeeklyPrice: number
+  defaultMonthlyPrice: number
 }
 
 export function ListingCard({
@@ -65,30 +65,20 @@ export function ListingCard({
                 </div>
               </div>
               <div className="text-right space-y-2">
-                {defaultDailyPrice && (
-                  <div className="space-y-1">
-                    <p className="text-lg font-semibold">
-                      ${defaultDailyPrice}
-                    </p>
-                    <p className="text-sm text-muted-foreground">per night</p>
-                  </div>
-                )}
-                {defaultWeeklyPrice && (
-                  <div className="space-y-1">
-                    <p className="text-lg font-semibold">
-                      ${defaultWeeklyPrice}
-                    </p>
-                    <p className="text-sm text-muted-foreground">per week</p>
-                  </div>
-                )}
-                {defaultMonthlyPrice && (
-                  <div className="space-y-1">
-                    <p className="text-lg font-semibold">
-                      ${defaultMonthlyPrice}
-                    </p>
-                    <p className="text-sm text-muted-foreground">per month</p>
-                  </div>
-                )}
+                <div className="space-y-1">
+                  <p className="text-lg font-semibold">${defaultDailyPrice}</p>
+                  <p className="text-sm text-muted-foreground">per night</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-lg font-semibold">${defaultWeeklyPrice}</p>
+                  <p className="text-sm text-muted-foreground">per week</p>
+                </div>
+                <div className="space-y-1">
+                  <p className="text-lg font-semibold">
+                    ${defaultMonthlyPrice}
+                  </p>
+                  <p className="text-sm text-muted-foreground">per month</p>
+                </div>
               </div>
             </div>
           </CardContent>

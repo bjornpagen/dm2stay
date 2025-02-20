@@ -188,9 +188,13 @@ export const listing = schema.table(
       .notNull()
       .references(() => user.id),
     airbnbId: text("airbnb_id").references(() => airbnbListing.airbnbId),
-    defaultDailyPrice: integer("default_daily_price"),
-    defaultWeeklyPrice: integer("default_weekly_price"),
-    defaultMonthlyPrice: integer("default_monthly_price"),
+    defaultDailyPrice: integer("default_daily_price").notNull().default(20000),
+    defaultWeeklyPrice: integer("default_weekly_price")
+      .notNull()
+      .default(126000),
+    defaultMonthlyPrice: integer("default_monthly_price")
+      .notNull()
+      .default(480000),
     createdAt: timestamp("created_at", { withTimezone: false })
       .notNull()
       .$defaultFn(() => new Date()),
@@ -345,6 +349,8 @@ export const booking = schema.table(
     checkOut: timestamp("check_out", { withTimezone: false }).notNull(),
     stripePaymentIntentId: text("stripe_payment_intent_id"),
     paymentAt: timestamp("payment_at", { withTimezone: false }),
+    stickerPrice: integer("sticker_price"),
+    guestCount: integer("guest_count").notNull().default(2),
     createdAt: timestamp("created_at", { withTimezone: false })
       .notNull()
       .$defaultFn(() => new Date()),

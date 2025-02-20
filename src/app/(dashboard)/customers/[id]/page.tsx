@@ -48,6 +48,8 @@ const getBookings = db
     checkOut: schema.booking.checkOut,
     listingId: schema.booking.listingId,
     paymentAt: schema.booking.paymentAt,
+    stickerPrice: schema.booking.stickerPrice,
+    guestCount: schema.booking.guestCount,
     createdAt: schema.booking.createdAt
   })
   .from(schema.booking)

@@ -8,9 +8,9 @@ type BookingInfo = Omit<
 >
 type ListingInfo = {
   id: string
-  defaultDailyPrice: number | null
-  defaultWeeklyPrice: number | null
-  defaultMonthlyPrice: number | null
+  defaultDailyPrice: number
+  defaultWeeklyPrice: number
+  defaultMonthlyPrice: number
   airbnbData: ListingData
 }
 
@@ -38,14 +38,18 @@ export function formatBookingStatus(activeBooking: BookingInfo | undefined) {
     return `Booking completed.
 Check-in: ${activeBooking.checkIn}
 Check-out: ${activeBooking.checkOut}
+Guests: ${activeBooking.guestCount}
 Listing: ${activeBooking.listingId}
+Total Price: ${activeBooking.stickerPrice ? `$${activeBooking.stickerPrice / 100}` : "Not set"}
 Payment finished on: ${activeBooking.paymentAt}`
   }
   return `Booking pending payment.
 Check-in: ${activeBooking.checkIn}
 Check-out: ${activeBooking.checkOut}
+Guests: ${activeBooking.guestCount}
 Listing: ${activeBooking.listingId}
-Complete your booking here: https://example.com/book/${activeBooking.listingId}?checkIn=${activeBooking.checkIn.toISOString()}&checkOut=${activeBooking.checkOut.toISOString()}`
+Total Price: ${activeBooking.stickerPrice ? `$${activeBooking.stickerPrice / 100}` : "Not set"}
+Remind the user to complete the payment via the checkout link, and resend the link if necessary.`
 }
 
 export function formatBookingFocus(activeBooking: BookingInfo | undefined) {
@@ -72,9 +76,33 @@ Property Information:
 ID: ${listing.id}
 ${JSON.stringify(listing.airbnbData)}
 Pricing Information:
-- Daily Price: ${listing.defaultDailyPrice ? `$${listing.defaultDailyPrice / 100}` : "Not set"}
-- Weekly Price: ${listing.defaultWeeklyPrice ? `$${listing.defaultWeeklyPrice / 100}` : "Not set"}
-- Monthly Price: ${listing.defaultMonthlyPrice ? `$${listing.defaultMonthlyPrice / 100}` : "Not set"}`
+- Daily Price: ${listing.defaultDailyPrice}
+- Weekly Price: ${listing.defaultWeeklyPrice}
+- Monthly Price: ${listing.defaultMonthlyPrice}`
   )
   .join("\n\n")}`
+}
+
+export function getBookingStatus(booking: {
+  checkIn: Date
+  checkOut: Date
+  paymentAt: Date | null
+}) {
+  const now = new Date()
+  const checkIn = new Date(booking.checkIn)
+  const checkOut = new Date(booking.checkOut)
+
+  if (booking.paymentAt === null) {
+    return "pending" as const
+  }
+
+  if (now > checkOut) {
+    return "completed" as const
+  }
+
+  if (now >= checkIn && now <= checkOut) {
+    return "active" as const
+  }
+
+  return "upcoming" as const
 }

@@ -85,9 +85,9 @@ export function CheckoutPage(params: {
   }
 
   const pricing = {
-    perNight: booking.listing.defaultDailyPrice ?? 0,
-    perWeek: booking.listing.defaultWeeklyPrice ?? 0,
-    perMonth: booking.listing.defaultMonthlyPrice ?? 0,
+    perNight: booking.listing.defaultDailyPrice,
+    perWeek: booking.listing.defaultWeeklyPrice,
+    perMonth: booking.listing.defaultMonthlyPrice,
     cleaningFee: 100,
     serviceFee: 75,
     taxRate: 0.12
