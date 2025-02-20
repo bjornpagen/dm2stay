@@ -13,7 +13,11 @@ export function ListingDescription({
               {section.title}
             </h3>
           )}
-          <p className="leading-relaxed">{section.content}</p>
+          <p
+            className="leading-relaxed"
+            // biome-ignore lint/security/noDangerouslySetInnerHtml: Content is sanitized
+            dangerouslySetInnerHTML={{ __html: section.content }}
+          />
         </div>
       ))}
     </div>

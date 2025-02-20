@@ -28,8 +28,16 @@ export function ListingHeader({ overview }: ListingHeaderProps) {
   return (
     <div className="space-y-4">
       <div>
-        <h1 className="text-3xl font-bold mb-2">{overview.title}</h1>
-        <p className="text-muted-foreground">{overview.location}</p>
+        <div className="flex flex-col gap-1">
+          <h1 className="text-3xl font-bold">
+            {overview.title.split(" · ")[0]}
+          </h1>
+          {overview.title.includes(" · ") && (
+            <p className="text-xl text-muted-foreground">
+              {overview.title.split(" · ").slice(1).join(" · ")}
+            </p>
+          )}
+        </div>
       </div>
 
       <div className="flex items-center gap-6">

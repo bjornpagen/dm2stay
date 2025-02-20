@@ -305,6 +305,7 @@ export const message = schema.table(
     userId: text("user_id")
       .notNull()
       .references(() => user.id),
+    sentAt: timestamp("sent_at", { withTimezone: false }),
     createdAt: timestamp("created_at", { withTimezone: false })
       .notNull()
       .$defaultFn(() => new Date()),
