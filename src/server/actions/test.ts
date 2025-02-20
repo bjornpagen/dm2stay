@@ -6,7 +6,7 @@ import { eq, asc } from "drizzle-orm"
 const TEST_PROSPECT_ID = "testtesttesttesttesttest"
 const TEST_USER_ID = "bb3orl4mh2hsxdeh4qhihqgk"
 
-export async function sendTestMessage(content: string): Promise<Message> {
+export async function sendTestMessage(content: string) {
   const message = await db
     .insert(schema.message)
     .values({
@@ -18,7 +18,7 @@ export async function sendTestMessage(content: string): Promise<Message> {
     })
     .returning()
 
-  return message[0] as Message
+  return message[0]
 }
 
 export async function getTestMessages() {

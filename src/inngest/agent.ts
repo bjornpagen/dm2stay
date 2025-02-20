@@ -62,6 +62,20 @@ async function handleCreateBookingIntent(
     throw new Error("Listing not found")
   }
 
+  const existingBooking = await db
+    .select()
+    .from(schema.booking)
+    .where(
+      and(
+        eq(schema.booking.prospectId, prospectId),
+        eq(schema.booking.listingId, args.listingId),
+        isNull(schema.booking.paymentAt)
+      )
+    )
+    .orderBy(desc(schema.booking.createdAt))
+    .limit(1)
+    .then((rows) => rows[0])
+
   const booking = await db
     .insert(schema.booking)
     .values({
@@ -71,8 +85,12 @@ async function handleCreateBookingIntent(
       checkOut: new Date(args.checkOut)
     })
     .onConflictDoUpdate({
-      target: [schema.booking.prospectId, schema.booking.listingId],
-      where: isNull(schema.booking.paymentAt),
+      target: schema.booking.id,
+      where: and(
+        eq(schema.booking.prospectId, prospectId),
+        eq(schema.booking.listingId, args.listingId),
+        isNull(schema.booking.paymentAt)
+      ),
       set: {
         checkIn: new Date(args.checkIn),
         checkOut: new Date(args.checkOut),
@@ -81,6 +99,7 @@ async function handleCreateBookingIntent(
     })
     .returning()
     .then((rows) => rows[0])
+
   if (!booking) {
     throw new Error("Failed to create booking")
   }
