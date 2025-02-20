@@ -7,48 +7,72 @@ import { Separator } from "@/components/ui/separator"
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Info, X } from "lucide-react"
-import { Tooltip, TooltipContent, TooltipProvider, TooltipTrigger } from "@/components/ui/tooltip"
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger
+} from "@/components/ui/tooltip"
 import { cn } from "@/lib/utils"
 
 interface PricingBreakdownProps {
   pricing: {
-    perNight: number
-    perWeek: number
-    perMonth: number
-    cleaningFee: number
-    serviceFee: number
+    perNight: number // in cents
+    perWeek: number // in cents
+    perMonth: number // in cents
+    cleaningFee: number // in cents
+    serviceFee: number // in cents
     taxRate: number
   }
   stayDetails: {
     nights: number
-    basePrice: number
-    cleaningFee: number
-    serviceFee: number
-    taxes: number
+    basePrice: number // in cents
+    cleaningFee: number // in cents
+    serviceFee: number // in cents
+    taxes: number // in cents
   }
 }
 
-export function PricingBreakdown({ pricing, stayDetails }: PricingBreakdownProps) {
+export function PricingBreakdown({
+  pricing,
+  stayDetails
+}: PricingBreakdownProps) {
   const [discountCode, setDiscountCode] = useState("")
-  const [appliedDiscount, setAppliedDiscount] = useState<{ code: string; amount: number } | null>(null)
+  const [appliedDiscount, setAppliedDiscount] = useState<{
+    code: string
+    amount: number // in cents
+  } | null>(null)
   const [isApplying, setIsApplying] = useState(false)
   const [error, setError] = useState<string | null>(null)
 
+  const formatPrice = (cents: number) => {
+    const dollars = cents / 100
+    return new Intl.NumberFormat("en-US", {
+      minimumFractionDigits: 2,
+      maximumFractionDigits: 2
+    }).format(dollars)
+  }
+
   const subtotal = stayDetails.basePrice
   const total =
-    subtotal + stayDetails.cleaningFee + stayDetails.serviceFee + stayDetails.taxes - (appliedDiscount?.amount || 0)
+    subtotal +
+    stayDetails.cleaningFee +
+    stayDetails.serviceFee +
+    stayDetails.taxes -
+    (appliedDiscount?.amount || 0)
 
   const handleApplyDiscount = async () => {
-    if (!discountCode) return
+    if (!discountCode) {
+      return
+    }
 
     setIsApplying(true)
     setError(null)
 
-    // Simulate API call
     await new Promise((resolve) => setTimeout(resolve, 1000))
 
     if (discountCode.toLowerCase() === "summer2024") {
-      setAppliedDiscount({ code: discountCode, amount: 50 })
+      setAppliedDiscount({ code: discountCode, amount: 5000 }) // $50.00 in cents
       setDiscountCode("")
     } else {
       setError("Invalid discount code")
@@ -62,18 +86,18 @@ export function PricingBreakdown({ pricing, stayDetails }: PricingBreakdownProps
     visible: {
       opacity: 1,
       y: 0,
-      transition: { type: "spring", stiffness: 300, damping: 30 },
-    },
+      transition: { type: "spring", stiffness: 300, damping: 30 }
+    }
   }
 
   const getPriceDescription = () => {
     if (stayDetails.nights >= 30) {
       return `Monthly rate (${Math.floor(stayDetails.nights / 30)} months${stayDetails.nights % 30 ? ` + ${stayDetails.nights % 30} nights` : ""})`
-    } else if (stayDetails.nights >= 7) {
-      return `Weekly rate (${Math.floor(stayDetails.nights / 7)} weeks${stayDetails.nights % 7 ? ` + ${stayDetails.nights % 7} nights` : ""})`
-    } else {
-      return `$${pricing.perNight} × ${stayDetails.nights} nights`
     }
+    if (stayDetails.nights >= 7) {
+      return `Weekly rate (${Math.floor(stayDetails.nights / 7)} weeks${stayDetails.nights % 7 ? ` + ${stayDetails.nights % 7} nights` : ""})`
+    }
+    return `$${formatPrice(pricing.perNight)} × ${stayDetails.nights} nights`
   }
 
   return (
@@ -90,21 +114,29 @@ export function PricingBreakdown({ pricing, stayDetails }: PricingBreakdownProps
             variants={{
               visible: {
                 transition: {
-                  staggerChildren: 0.1,
-                },
-              },
+                  staggerChildren: 0.1
+                }
+              }
             }}
           >
             {stayDetails.nights > 0 && (
-              <motion.div className="flex justify-between items-center group" variants={lineItem}>
-                <span className="flex items-center">{getPriceDescription()}</span>
+              <motion.div
+                className="flex justify-between items-center group"
+                variants={lineItem}
+              >
+                <span className="flex items-center">
+                  {getPriceDescription()}
+                </span>
                 <span className="font-medium transition-colors group-hover:text-primary">
-                  ${stayDetails.basePrice.toFixed(2)}
+                  ${formatPrice(stayDetails.basePrice)}
                 </span>
               </motion.div>
             )}
 
-            <motion.div className="flex justify-between items-center group" variants={lineItem}>
+            <motion.div
+              className="flex justify-between items-center group"
+              variants={lineItem}
+            >
               <span className="flex items-center gap-2">
                 Cleaning fee
                 <Tooltip>
@@ -120,11 +152,14 @@ export function PricingBreakdown({ pricing, stayDetails }: PricingBreakdownProps
                 </Tooltip>
               </span>
               <span className="font-medium transition-colors group-hover:text-primary">
-                ${stayDetails.cleaningFee.toFixed(2)}
+                ${formatPrice(stayDetails.cleaningFee)}
               </span>
             </motion.div>
 
-            <motion.div className="flex justify-between items-center group" variants={lineItem}>
+            <motion.div
+              className="flex justify-between items-center group"
+              variants={lineItem}
+            >
               <span className="flex items-center gap-2">
                 Service fee
                 <Tooltip>
@@ -140,11 +175,14 @@ export function PricingBreakdown({ pricing, stayDetails }: PricingBreakdownProps
                 </Tooltip>
               </span>
               <span className="font-medium transition-colors group-hover:text-primary">
-                ${stayDetails.serviceFee.toFixed(2)}
+                ${formatPrice(stayDetails.serviceFee)}
               </span>
             </motion.div>
 
-            <motion.div className="flex justify-between items-center group" variants={lineItem}>
+            <motion.div
+              className="flex justify-between items-center group"
+              variants={lineItem}
+            >
               <span className="flex items-center gap-2">
                 Taxes
                 <Tooltip>
@@ -155,12 +193,15 @@ export function PricingBreakdown({ pricing, stayDetails }: PricingBreakdownProps
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent>
-                    <p>Local taxes and fees ({(pricing.taxRate * 100).toFixed(0)}%)</p>
+                    <p>
+                      Local taxes and fees ({(pricing.taxRate * 100).toFixed(0)}
+                      %)
+                    </p>
                   </TooltipContent>
                 </Tooltip>
               </span>
               <span className="font-medium transition-colors group-hover:text-primary">
-                ${stayDetails.taxes.toFixed(2)}
+                ${formatPrice(stayDetails.taxes)}
               </span>
             </motion.div>
 
@@ -184,7 +225,9 @@ export function PricingBreakdown({ pricing, stayDetails }: PricingBreakdownProps
                       <span className="sr-only">Remove discount</span>
                     </Button>
                   </span>
-                  <span className="font-medium">-${appliedDiscount.amount.toFixed(2)}</span>
+                  <span className="font-medium">
+                    -${formatPrice(appliedDiscount.amount)}
+                  </span>
                 </motion.div>
               )}
             </AnimatePresence>
@@ -201,9 +244,16 @@ export function PricingBreakdown({ pricing, stayDetails }: PricingBreakdownProps
                   setDiscountCode(e.target.value)
                   setError(null)
                 }}
-                className={cn("flex-1", error ? "border-red-500 focus-visible:ring-red-500" : "")}
+                className={cn(
+                  "flex-1",
+                  error ? "border-red-500 focus-visible:ring-red-500" : ""
+                )}
               />
-              <Button onClick={handleApplyDiscount} disabled={!discountCode || isApplying} className="min-w-[100px]">
+              <Button
+                onClick={handleApplyDiscount}
+                disabled={!discountCode || isApplying}
+                className="min-w-[100px]"
+              >
                 {isApplying ? "Applying..." : "Apply"}
               </Button>
             </div>
@@ -225,14 +275,18 @@ export function PricingBreakdown({ pricing, stayDetails }: PricingBreakdownProps
             className="flex justify-between items-center"
             initial={{ opacity: 0, y: 20 }}
             animate={{ opacity: 1, y: 0 }}
-            transition={{ delay: 0.4, type: "spring", stiffness: 300, damping: 30 }}
+            transition={{
+              delay: 0.4,
+              type: "spring",
+              stiffness: 300,
+              damping: 30
+            }}
           >
             <span className="text-lg font-semibold">Total</span>
-            <span className="text-lg font-bold">${total.toFixed(2)}</span>
+            <span className="text-lg font-bold">${formatPrice(total)}</span>
           </motion.div>
         </CardContent>
       </Card>
     </TooltipProvider>
   )
 }
-

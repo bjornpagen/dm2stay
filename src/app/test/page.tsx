@@ -24,6 +24,8 @@ type Message = {
 export default function TestPage() {
   const [message, setMessage] = React.useState("")
   const [messages, setMessages] = React.useState<Message[]>([])
+  const [isSending, setIsSending] = React.useState(false)
+  const sendingRef = React.useRef(false)
   const scrollAreaRef = React.useRef<HTMLDivElement>(null)
 
   const fetchMessages = React.useCallback(async () => {
@@ -47,19 +49,24 @@ export default function TestPage() {
   }, [])
 
   const handleSend = async () => {
-    if (!message.trim()) {
+    if (!message.trim() || sendingRef.current) {
       return
     }
-
     const trimmedMessage = message.trim()
     setMessage("")
-
+    sendingRef.current = true
+    setIsSending(true)
     try {
       const newMessage = await sendTestMessage(trimmedMessage)
-      setMessages((prev) => [...prev, newMessage])
+      if (newMessage) {
+        setMessages((prev) => [...prev, newMessage])
+      }
     } catch (error) {
       console.error("Failed to send message:", error)
       setMessage(trimmedMessage)
+    } finally {
+      sendingRef.current = false
+      setIsSending(false)
     }
   }
 
@@ -115,6 +122,7 @@ export default function TestPage() {
             variant="ghost"
             className="absolute right-3 top-3 h-6 w-6 text-muted-foreground hover:text-foreground"
             onClick={handleSend}
+            disabled={isSending}
           >
             <ArrowUp className="h-4 w-4" />
           </Button>

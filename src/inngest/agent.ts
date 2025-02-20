@@ -62,20 +62,6 @@ async function handleCreateBookingIntent(
     throw new Error("Listing not found")
   }
 
-  const existingBooking = await db
-    .select()
-    .from(schema.booking)
-    .where(
-      and(
-        eq(schema.booking.prospectId, prospectId),
-        eq(schema.booking.listingId, args.listingId),
-        isNull(schema.booking.paymentAt)
-      )
-    )
-    .orderBy(desc(schema.booking.createdAt))
-    .limit(1)
-    .then((rows) => rows[0])
-
   const booking = await db
     .insert(schema.booking)
     .values({
@@ -107,7 +93,7 @@ async function handleCreateBookingIntent(
   const baseUrl = env.VERCEL_URL
     ? `https://${env.VERCEL_URL}`
     : "http://localhost:3000"
-  const checkoutUrl = `${baseUrl}/checkout/${booking.listingId}`
+  const checkoutUrl = `${baseUrl}/checkout/${booking.id}`
 
   const messageId = createId()
   await db.insert(schema.message).values({
@@ -353,7 +339,8 @@ ${formatBookingStatus(activeBooking)}
 [NEXT STEPS]
 ${formatBookingFocus(activeBooking)}
 
-When booking details are provided, immediately invoke finalizeBooking to record the booking.
+When booking details are provided, immediately invoke createBookingIntentAndSendCheckoutLink to record the booking.
+Always respond in plain text without any markdown formatting or special characters.
 Respond in a friendly, natural manner, as in a real conversation. When needed, split your response into multiple short messages using a single newline "\\n" solely for message separation.`
     }
 
@@ -370,12 +357,12 @@ Respond in a friendly, natural manner, as in a real conversation. When needed, s
         content: msg.content,
         createdAt: msg.createdAt
       })),
-      ...toolCallsHistory.map((tc) => ({
-        role: "tool" as const,
-        tool_call_id: tc.openaiId,
-        content: `${tc.functionName}: args ${JSON.stringify(tc.functionArgs)} returned ${tc.result}`,
-        createdAt: tc.createdAt
-      })),
+      // ...toolCallsHistory.map((tc) => ({
+      //   role: "tool" as const,
+      //   tool_call_id: tc.openaiId,
+      //   content: `${tc.functionName}: args ${JSON.stringify(tc.functionArgs)} returned ${tc.result}`,
+      //   createdAt: tc.createdAt
+      // })),
       { role: "user" as const, content, createdAt }
     ].sort(
       (a, b) =>

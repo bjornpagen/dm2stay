@@ -2,11 +2,28 @@
 import { db } from "@/server/db"
 import * as schema from "@/server/db/schema"
 import { eq, asc } from "drizzle-orm"
+import { inngest } from "@/inngest/client"
 
 const TEST_PROSPECT_ID = "testtesttesttesttesttest"
-const TEST_USER_ID = "bb3orl4mh2hsxdeh4qhihqgk"
+const TEST_USER_EMAIL = "bjorn.pagen@gauntletai.com"
 
 export async function sendTestMessage(content: string) {
+  const user = await db.query.user.findFirst({
+    where: eq(schema.user.email, TEST_USER_EMAIL)
+  })
+
+  if (!user) {
+    throw new Error("Test user not found")
+  }
+
+  await db
+    .insert(schema.prospect)
+    .values({
+      id: TEST_PROSPECT_ID,
+      name: "Test Prospect"
+    })
+    .onConflictDoNothing({ target: schema.prospect.id })
+
   const message = await db
     .insert(schema.message)
     .values({
@@ -14,9 +31,14 @@ export async function sendTestMessage(content: string) {
       source: "test",
       createdAt: new Date(),
       prospectId: TEST_PROSPECT_ID,
-      userId: TEST_USER_ID
+      userId: user.id
     })
     .returning()
+
+  await inngest.send({
+    name: "test/message.send",
+    data: { content }
+  })
 
   return message[0]
 }

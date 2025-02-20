@@ -49,13 +49,17 @@ Check-out: ${activeBooking.checkOut}
 Guests: ${activeBooking.guestCount}
 Listing: ${activeBooking.listingId}
 Total Price: ${activeBooking.stickerPrice ? `$${activeBooking.stickerPrice / 100}` : "Not set"}
-Remind the user to complete the payment via the checkout link, and resend the link if necessary.`
+Remind the guest of the following steps to complete the booking:
+1. Click the checkout link above
+2. Fill in your payment details
+3. Submit payment to confirm your reservation
+Let me know if you need any help with the payment process!`
 }
 
 export function formatBookingFocus(activeBooking: BookingInfo | undefined) {
   if (!activeBooking) {
     return `1. Collect check-in and check-out dates
-2. Gather guest contact information (email and phone)
+2. Gather guest contact information (email)
 3. Finalize the booking once all details are confirmed`
   }
   return activeBooking.paymentAt
