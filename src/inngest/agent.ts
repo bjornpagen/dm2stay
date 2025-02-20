@@ -1,7 +1,7 @@
 import { inngest } from "@/inngest/client"
 import { openai, OPENAI_DEFAULT_MODEL } from "@/server/openai"
 import { db } from "@/server/db"
-import { eq, desc, and, ne, gte, asc } from "drizzle-orm"
+import { eq, desc, and, ne, gte, asc, isNull } from "drizzle-orm"
 import * as schema from "@/server/db/schema"
 import type {
   ChatCompletionMessageToolCall,
@@ -15,21 +15,21 @@ import {
   formatProspectInfo,
   formatListingInfo
 } from "@/server/format"
+import { env } from "@/env"
 
 const storeGuestInfoSchema = z.object({
   name: z.string().nullable(),
-  email: z.string().nullable(),
-  phone: z.string().nullable()
+  email: z.string().nullable()
 })
 
-const finalizeBookingSchema = z.object({
+const createBookingIntentSchema = z.object({
   listingId: z.string(),
   checkIn: z.string(),
   checkOut: z.string()
 })
 
 type StoreGuestInfoArgs = z.infer<typeof storeGuestInfoSchema>
-type FinalizeBookingArgs = z.infer<typeof finalizeBookingSchema>
+type CreateBookingIntentArgs = z.infer<typeof createBookingIntentSchema>
 
 async function handleStoreGuestInfo(
   args: StoreGuestInfoArgs,
@@ -39,18 +39,29 @@ async function handleStoreGuestInfo(
     .update(schema.prospect)
     .set({
       name: args.name ?? undefined,
-      email: args.email ?? undefined,
-      phone: args.phone ?? undefined
+      email: args.email ?? undefined
     })
     .where(eq(schema.prospect.id, prospectId))
 
   return "Guest info updated"
 }
 
-async function handleFinalizeBooking(
-  args: FinalizeBookingArgs,
+async function handleCreateBookingIntent(
+  args: CreateBookingIntentArgs,
   prospectId: string
 ) {
+  const listing = await db
+    .select({
+      userId: schema.listing.userId
+    })
+    .from(schema.listing)
+    .where(eq(schema.listing.id, args.listingId))
+    .limit(1)
+    .then((rows) => rows[0])
+  if (!listing) {
+    throw new Error("Listing not found")
+  }
+
   const booking = await db
     .insert(schema.booking)
     .values({
@@ -59,6 +70,15 @@ async function handleFinalizeBooking(
       checkIn: new Date(args.checkIn),
       checkOut: new Date(args.checkOut)
     })
+    .onConflictDoUpdate({
+      target: [schema.booking.prospectId, schema.booking.listingId],
+      where: isNull(schema.booking.paymentAt),
+      set: {
+        checkIn: new Date(args.checkIn),
+        checkOut: new Date(args.checkOut),
+        updatedAt: new Date()
+      }
+    })
     .returning()
     .then((rows) => rows[0])
 
@@ -66,7 +86,26 @@ async function handleFinalizeBooking(
     throw new Error("Failed to create booking")
   }
 
-  return `https://example.com/book/${booking.listingId}?checkIn=${booking.checkIn.toISOString()}&checkOut=${booking.checkOut.toISOString()}`
+  const baseUrl = env.VERCEL_URL
+    ? `https://${env.VERCEL_URL}`
+    : "http://localhost:3000"
+  const checkoutUrl = `${baseUrl}/checkout/${booking.listingId}`
+
+  const messageId = createId()
+  await db.insert(schema.message).values({
+    id: messageId,
+    source: "ai",
+    content: checkoutUrl,
+    prospectId: prospectId,
+    userId: listing.userId
+  })
+
+  await inngest.send({
+    name: "agent/message.generated",
+    data: { messageIds: [messageId] }
+  })
+
+  return "Booking intent created and checkout link sent"
 }
 
 async function handleToolCalls(
@@ -90,14 +129,14 @@ async function handleToolCalls(
           }
           return handleStoreGuestInfo(result.data, prospectId)
         }
-        case "finalizeBooking": {
-          const result = finalizeBookingSchema.safeParse(rawArgs)
+        case "createBookingIntentAndSendCheckoutLink": {
+          const result = createBookingIntentSchema.safeParse(rawArgs)
           if (!result.success) {
             throw new Error(
-              `Invalid finalizeBooking args: ${result.error.message}`
+              `Invalid createBookingIntent args: ${result.error.message}`
             )
           }
-          return handleFinalizeBooking(result.data, prospectId)
+          return handleCreateBookingIntent(result.data, prospectId)
         }
         default:
           throw new Error(`Unexpected function call: ${toolCall.function.name}`)
@@ -122,13 +161,9 @@ const tools: ChatCompletionTool[] = [
           email: {
             type: ["string", "null"],
             description: "Guest's email address"
-          },
-          phone: {
-            type: ["string", "null"],
-            description: "Guest's phone number"
           }
         },
-        required: ["name", "email", "phone"],
+        required: ["name", "email"],
         additionalProperties: false
       },
       strict: true
@@ -137,9 +172,9 @@ const tools: ChatCompletionTool[] = [
   {
     type: "function",
     function: {
-      name: "finalizeBooking",
+      name: "createBookingIntentAndSendCheckoutLink",
       description:
-        "Create a final booking with listing and dates to generate checkout link",
+        "Create a booking intent (not yet confirmed until payment) and send a checkout link to the guest",
       parameters: {
         type: "object",
         properties: {
