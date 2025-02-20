@@ -2,7 +2,7 @@
 
 import { db } from "@/server/db"
 import * as schema from "@/server/db/schema"
-import { eq, asc } from "drizzle-orm"
+import { eq, asc, and, not } from "drizzle-orm"
 import { inngest } from "@/inngest/client"
 
 const TEST_PROSPECT_ID = "testtesttesttesttesttest"
@@ -23,6 +23,11 @@ export async function getTestMessages() {
       createdAt: schema.message.createdAt
     })
     .from(schema.message)
-    .where(eq(schema.message.prospectId, TEST_PROSPECT_ID))
+    .where(
+      and(
+        eq(schema.message.prospectId, TEST_PROSPECT_ID),
+        not(eq(schema.message.content, ""))
+      )
+    )
     .orderBy(asc(schema.message.createdAt))
 }

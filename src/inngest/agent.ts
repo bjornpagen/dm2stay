@@ -178,7 +178,7 @@ const tools: ChatCompletionTool[] = [
     function: {
       name: "createBookingIntentAndSendCheckoutLink",
       description:
-        "Create a booking intent (not yet confirmed until payment) and send a checkout link to the guest",
+        "Create a booking intent and automatically send the checkout link to the guest. The checkout link will be sent immediately after calling this function. This is safe to call multiple times.",
       parameters: {
         type: "object",
         properties: {
@@ -251,6 +251,7 @@ export const messageReceived = inngest.createFunction(
         .select({
           source: schema.message.source,
           content: schema.message.content,
+          toolCalls: schema.message.toolCalls,
           createdAt: schema.message.createdAt
         })
         .from(schema.message)
@@ -325,13 +326,13 @@ export const messageReceived = inngest.createFunction(
 
     const systemMessage = {
       role: "system" as const,
-      content: `You are a vacation rental booking assistant. Your role is to assist guests in making a booking for a vacation rental.
+      content: `You are a vacation rental booking assistant focused on guiding guests to successful bookings while providing excellent service. Balance being helpful with encouraging action.
 
 [GUEST INFO]
 ${formatProspectInfo(prospect)}
 
-[AVAILABLE PROPERTIES]
-${formatListingInfo(listings)}
+[PROPERTY${listings.length === 1 ? "" : " OPTIONS"}]
+${formatListingInfo(listings)}${listings.length === 1 ? "\nThis is our featured property with limited availability." : "\nEach property offers a unique experience for our guests."}
 
 [BOOKING STATUS]
 ${formatBookingStatus(activeBooking)}
@@ -339,27 +340,38 @@ ${formatBookingStatus(activeBooking)}
 [NEXT STEPS]
 ${formatBookingFocus(activeBooking)}
 
-When booking details are provided, immediately invoke createBookingIntentAndSendCheckoutLink to record the booking.
+CRITICAL RESPONSE REQUIREMENTS:
+1. ALWAYS send exactly 2-3 separate messages - no exceptions
+2. NEVER use emojis under any circumstances
+3. Keep each message under 160 characters
+4. Use exactly one line break between messages
+5. No message grouping or batching - each thought must be its own message
 
-RESPONSE RULES:
-- Never use any formatting (no markdown, bullets, numbers, or special characters)
-- Keep each message under 160 characters
-- Never send more than 3 messages total
-- Use a single newline "\\n" to separate messages
-- Always write in plain conversational text
-- Never use lists or enumerations
+MESSAGE STRUCTURE:
+- First message: Key information or answer
+- Second message: Next step or call-to-action
+- Optional third message: Support or additional detail
 
-Example good response:
-"Villa Kaamos is a beautiful mountain retreat where you can watch the Northern Lights right from the living room.\\n
-The villa includes a cozy sauna and fireplace, plus easy access to hiking and ski trails. What would you like to know more about?"
+COMMUNICATION PRIORITIES:
+1. Build trust through expertise and transparency
+2. Guide naturally toward booking completion
+3. Create appropriate urgency through value
+4. Make the booking process feel simple
+5. Address concerns while maintaining momentum
 
-Example bad response (never do this):
-"Here are the activities:
-1. Skiing
-2. Hiking
-3. Sauna
-Let me know what interests you!"
-`
+STYLE GUIDELINES:
+- Professional and warm
+- Clear and specific
+- Solution-focused
+- Confidence-building
+- Direct but not pushy
+
+AVOID:
+- Single messages (always send at least 2)
+- More than 3 messages
+- Any use of emoji
+- Vague or indirect language
+- Aggressive sales tactics`
     }
 
     const conversationHistory = [
@@ -373,6 +385,9 @@ Let me know what interests you!"
             ? ("user" as const)
             : ("assistant" as const),
         content: msg.content,
+        tool_calls: msg.toolCalls as
+          | ChatCompletionMessageToolCall[]
+          | undefined,
         createdAt: msg.createdAt
       })),
       ...toolCallsHistory.map((tc) => ({
@@ -386,6 +401,8 @@ Let me know what interests you!"
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     )
+
+    console.log(JSON.stringify(conversationHistory, null, 2))
 
     const messages = [systemMessage, ...conversationHistory]
 
@@ -416,6 +433,14 @@ Let me know what interests you!"
         }))
 
     if (aiMessage.tool_calls?.length) {
+      await db.insert(schema.message).values({
+        source: "ai" as const,
+        content: aiMessage.content ?? "",
+        prospectId: prospect.id,
+        userId: message.userId,
+        toolCalls: aiMessage.tool_calls
+      })
+
       const toolResults = await handleToolCalls(
         aiMessage.tool_calls,
         prospect.id
@@ -423,6 +448,7 @@ Let me know what interests you!"
       if (toolResults.length !== aiMessage.tool_calls.length) {
         throw new Error("Tool results length mismatch")
       }
+
       await db.insert(schema.toolCall).values(
         aiMessage.tool_calls.map((toolCall, i) => ({
           openaiId: toolCall.id,
@@ -433,9 +459,15 @@ Let me know what interests you!"
           result: toolResults[i] ?? "Error: No result"
         }))
       )
-      return await inngest.send({
+
+      await inngest.send({
+        name: "agent/message.generated",
+        data: { messageIds: [messageId] }
+      })
+
+      return inngest.send({
         name: "agent/message.received",
-        data: { messageId: event.data.messageId }
+        data: { messageId }
       })
     }
 

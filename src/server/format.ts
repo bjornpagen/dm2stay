@@ -32,39 +32,51 @@ export function formatProspectInfo(prospect: ProspectInfo) {
 
 export function formatBookingStatus(activeBooking: BookingInfo | undefined) {
   if (!activeBooking) {
-    return "No active booking exists. Prompt the guest to provide booking details."
+    return `Ready to help find the perfect dates for your stay.
+Key priorities:
+- Understand guest preferences and timeline
+- Present relevant availability and rates
+- Guide toward a confident booking decision`
   }
+
   if (activeBooking.paymentAt) {
-    return `Booking completed.
+    return `Booking confirmed and secured.
 Check-in: ${activeBooking.checkIn}
 Check-out: ${activeBooking.checkOut}
 Guests: ${activeBooking.guestCount}
-Listing: ${activeBooking.listingId}
-Total Price: ${activeBooking.stickerPrice ? `$${activeBooking.stickerPrice / 100}` : "Not set"}
-Payment finished on: ${activeBooking.paymentAt}`
+Total: $${activeBooking.stickerPrice ? formatPrice(activeBooking.stickerPrice) : "Not set"}
+Focus on building excitement and providing arrival details.`
   }
-  return `Booking pending payment.
+
+  return `Booking in progress.
 Check-in: ${activeBooking.checkIn}
 Check-out: ${activeBooking.checkOut}
 Guests: ${activeBooking.guestCount}
-Listing: ${activeBooking.listingId}
-Total Price: ${activeBooking.stickerPrice ? `$${activeBooking.stickerPrice / 100}` : "Not set"}
-Remind the guest of the following steps to complete the booking:
-1. Click the checkout link above
-2. Fill in your payment details
-3. Submit payment to confirm your reservation
-Let me know if you need any help with the payment process!`
+Total: $${activeBooking.stickerPrice ? formatPrice(activeBooking.stickerPrice) : "Not set"}
+
+Priority: Guide to completion while addressing any questions.
+Note: Dates are temporarily held pending payment confirmation.`
 }
 
 export function formatBookingFocus(activeBooking: BookingInfo | undefined) {
   if (!activeBooking) {
-    return `1. Collect check-in and check-out dates
-2. Gather guest contact information (email)
-3. Finalize the booking once all details are confirmed`
+    return `Guide guest journey:
+- Understand their needs and timeline
+- Share relevant property details and availability
+- Make booking process clear and appealing
+- Highlight unique value and amenities`
   }
+
   return activeBooking.paymentAt
-    ? "Address any questions regarding the confirmed booking"
-    : "Guide the guest to complete the pending payment via the checkout link"
+    ? `Support confirmed booking:
+- Share excitement for their upcoming stay
+- Offer to answer any pre-arrival questions
+- Provide relevant property and area details`
+    : `Focus on booking completion:
+- Reinforce value and amenities
+- Make payment process feel secure and simple
+- Address any remaining questions promptly
+- Create natural urgency through limited availability`
 }
 
 export function formatListingInfo(listings: ListingInfo[]) {

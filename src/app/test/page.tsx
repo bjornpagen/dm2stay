@@ -21,6 +21,33 @@ type Message = {
     | "test"
 }
 
+function MessageContent({ content }: { content: string }) {
+  const urlRegex = /(https?:\/\/[^\s]+)/g
+  const parts = content.split(urlRegex)
+
+  return (
+    <React.Fragment>
+      {parts.map((part, i) => {
+        const key = `${part}-${i}`
+        if (part.match(urlRegex)) {
+          return (
+            <a
+              key={key}
+              href={part}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="text-blue-500 hover:underline"
+            >
+              {part}
+            </a>
+          )
+        }
+        return <span key={key}>{part}</span>
+      })}
+    </React.Fragment>
+  )
+}
+
 export default function TestPage() {
   const [message, setMessage] = React.useState("")
   const [messages, setMessages] = React.useState<Message[]>([])
@@ -92,7 +119,9 @@ export default function TestPage() {
                     : "bg-muted"
                 }`}
               >
-                <p className="text-sm">{msg.content}</p>
+                <div className="text-sm">
+                  <MessageContent content={msg.content} />
+                </div>
                 <p className="text-xs opacity-70 mt-1">
                   {new Date(msg.createdAt).toLocaleTimeString()}
                 </p>

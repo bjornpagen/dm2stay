@@ -318,13 +318,18 @@ export const message = schema.table(
     updatedAt: timestamp("updated_at", { withTimezone: false })
       .notNull()
       .$defaultFn(() => new Date())
-      .$onUpdateFn(() => new Date())
+      .$onUpdateFn(() => new Date()),
+    toolCalls: jsonb("tool_calls")
   },
   (table) => ({
     idLengthCheck: check("message_id_length", sql`length(${table.id}) = 24`),
     prospectIdIdx: index("message_prospect_id_idx").on(table.prospectId),
     userIdIdx: index("message_user_id_idx").on(table.userId),
-    sourceIdx: index("message_source_idx").on(table.source)
+    sourceIdx: index("message_source_idx").on(table.source),
+    toolCallsCheck: check(
+      "message_tool_calls_check",
+      sql`"tool_calls" IS NULL OR "source" = 'ai'`
+    )
   })
 )
 
