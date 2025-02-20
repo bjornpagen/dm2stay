@@ -170,7 +170,7 @@ export const airbnbListing = schema.table("airbnb_listing", {
   airbnbUrl: text("airbnb_url")
     .notNull()
     .generatedAlwaysAs(sql`'https://www.airbnb.com/rooms/' || "airbnb_id"`),
-  data: jsonb("data").notNull().$type<ListingData>(),
+  data: jsonb("data").$type<ListingData>(),
   createdAt: timestamp("created_at", { withTimezone: false })
     .notNull()
     .$defaultFn(() => new Date()),
@@ -187,7 +187,9 @@ export const listing = schema.table(
     userId: text("user_id")
       .notNull()
       .references(() => user.id),
-    airbnbId: text("airbnb_id").references(() => airbnbListing.airbnbId),
+    airbnbId: text("airbnb_id")
+      .notNull()
+      .references(() => airbnbListing.airbnbId),
     defaultDailyPrice: integer("default_daily_price").notNull().default(20000),
     defaultWeeklyPrice: integer("default_weekly_price")
       .notNull()

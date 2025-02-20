@@ -11,7 +11,7 @@ type ListingInfo = {
   defaultDailyPrice: number
   defaultWeeklyPrice: number
   defaultMonthlyPrice: number
-  airbnbData: ListingData
+  airbnbData: ListingData | null
 }
 
 export function formatProspectInfo(prospect: ProspectInfo) {
@@ -74,7 +74,7 @@ ${listings
     (listing) => `
 Property Information:
 ID: ${listing.id}
-${JSON.stringify(listing.airbnbData)}
+${listing.airbnbData ? JSON.stringify(listing.airbnbData) : "No listing data available, tell the guest to check back in couple minutes."}
 Pricing Information:
 - Daily Price: ${listing.defaultDailyPrice}
 - Weekly Price: ${listing.defaultWeeklyPrice}

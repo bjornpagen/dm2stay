@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import React from "react"
 import {
   Dialog,
   DialogContent,
@@ -11,13 +11,9 @@ import {
 import { Button } from "@/components/ui/button"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue
-} from "@/components/ui/select"
+import { importAirbnbListing } from "@/server/import"
+import { Loader2 } from "lucide-react"
+import { toast } from "sonner"
 
 interface ImportListingsModalProps {
   isOpen: boolean
@@ -28,46 +24,98 @@ export function ImportListingsModal({
   isOpen,
   onClose
 }: ImportListingsModalProps) {
-  const [importMethod, setImportMethod] = useState("manual")
+  const [airbnbUrl, setAirbnbUrl] = React.useState("")
+  const [urlError, setUrlError] = React.useState("")
+  const [isLoading, setIsLoading] = React.useState(false)
 
-  const handleImport = () => {
-    // Implement import logic here
-    console.log("Importing listings...")
-    onClose()
+  const validateAirbnbUrl = (url: string) => {
+    if (!url) {
+      return "URL is required"
+    }
+
+    try {
+      const parsedUrl = new URL(url)
+      const isAirbnbDomain = parsedUrl.hostname.includes("airbnb")
+      const hasRoomPath = parsedUrl.pathname.includes("/rooms/")
+
+      if (!isAirbnbDomain) {
+        return "Must be an Airbnb URL"
+      }
+      if (!hasRoomPath) {
+        return "Must be a valid Airbnb listing URL"
+      }
+
+      return ""
+    } catch {
+      return "Invalid URL format"
+    }
+  }
+
+  const handleUrlChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const newUrl = e.target.value
+    setAirbnbUrl(newUrl)
+    setUrlError(validateAirbnbUrl(newUrl))
+  }
+
+  const handleImport = async () => {
+    if (!airbnbUrl) {
+      return
+    }
+
+    const error = validateAirbnbUrl(airbnbUrl)
+    if (error) {
+      setUrlError(error)
+      return
+    }
+
+    try {
+      setIsLoading(true)
+      await importAirbnbListing(airbnbUrl)
+      toast.success("Successfully queued import")
+      onClose()
+    } catch (error) {
+      const message = error instanceof Error ? error.message : "Import failed"
+      setUrlError(message)
+      toast.error(message)
+    } finally {
+      setIsLoading(false)
+    }
   }
 
   return (
     <Dialog open={isOpen} onOpenChange={onClose}>
       <DialogContent>
         <DialogHeader>
-          <DialogTitle>Import Listings</DialogTitle>
+          <DialogTitle>Import Airbnb Listing</DialogTitle>
           <DialogDescription>
-            Choose how you want to import your listings. You can either connect
-            to a platform or enter details manually.
+            Enter your Airbnb listing URL to import the property details
           </DialogDescription>
         </DialogHeader>
         <div className="space-y-4">
           <div className="space-y-2">
-            <Label htmlFor="import-method">Import Method</Label>
-            <Select value={importMethod} onValueChange={setImportMethod}>
-              <SelectTrigger id="import-method">
-                <SelectValue placeholder="Select import method" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="airbnb">Airbnb</SelectItem>
-                <SelectItem value="vrbo">VRBO</SelectItem>
-                <SelectItem value="manual">Manual Entry</SelectItem>
-              </SelectContent>
-            </Select>
+            <Label htmlFor="airbnb-url">Airbnb Listing URL</Label>
+            <Input
+              id="airbnb-url"
+              placeholder="https://airbnb.com/rooms/..."
+              value={airbnbUrl}
+              onChange={handleUrlChange}
+              className={urlError ? "border-red-500" : ""}
+            />
+            {urlError && <p className="text-sm text-red-500">{urlError}</p>}
           </div>
-          {importMethod === "manual" && (
-            <div className="space-y-2">
-              <Label htmlFor="property-name">Property Name</Label>
-              <Input id="property-name" placeholder="Enter property name" />
-            </div>
-          )}
-          <Button onClick={handleImport} className="w-full">
-            Start Import
+          <Button
+            onClick={handleImport}
+            className="w-full"
+            disabled={!airbnbUrl || Boolean(urlError) || isLoading}
+          >
+            {isLoading ? (
+              <React.Fragment>
+                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                Importing...
+              </React.Fragment>
+            ) : (
+              "Import from Airbnb"
+            )}
           </Button>
         </div>
       </DialogContent>
