@@ -81,7 +81,6 @@ async function handleCreateBookingIntent(
     })
     .returning()
     .then((rows) => rows[0])
-
   if (!booking) {
     throw new Error("Failed to create booking")
   }
