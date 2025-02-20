@@ -230,7 +230,7 @@ export const messageReceived = inngest.createFunction(
       previousMessages,
       listings,
       activeBooking,
-      _toolCallsHistory
+      toolCallsHistory
     ] = await Promise.all([
       db
         .select({
@@ -375,12 +375,12 @@ Let me know what interests you!"
         content: msg.content,
         createdAt: msg.createdAt
       })),
-      // ..._toolCallsHistory.map((tc) => ({
-      //   role: "tool" as const,
-      //   tool_call_id: tc.openaiId,
-      //   content: `${tc.functionName}: args ${JSON.stringify(tc.functionArgs)} returned ${tc.result}`,
-      //   createdAt: tc.createdAt
-      // })),
+      ...toolCallsHistory.map((tc) => ({
+        role: "tool" as const,
+        tool_call_id: tc.openaiId,
+        content: `${tc.functionName}: args ${JSON.stringify(tc.functionArgs)} returned ${tc.result}`,
+        createdAt: tc.createdAt
+      })),
       { role: "user" as const, content, createdAt }
     ].sort(
       (a, b) =>
@@ -415,10 +415,6 @@ Let me know what interests you!"
           content
         }))
 
-    const aiMessages = aiMessage.content
-      ? parseAiMessages(aiMessage.content)
-      : []
-
     if (aiMessage.tool_calls?.length) {
       const toolResults = await handleToolCalls(
         aiMessage.tool_calls,
@@ -427,7 +423,6 @@ Let me know what interests you!"
       if (toolResults.length !== aiMessage.tool_calls.length) {
         throw new Error("Tool results length mismatch")
       }
-
       await db.insert(schema.toolCall).values(
         aiMessage.tool_calls.map((toolCall, i) => ({
           openaiId: toolCall.id,
@@ -438,12 +433,15 @@ Let me know what interests you!"
           result: toolResults[i] ?? "Error: No result"
         }))
       )
-
       return await inngest.send({
         name: "agent/message.received",
         data: { messageId: event.data.messageId }
       })
     }
+
+    const aiMessages = aiMessage.content
+      ? parseAiMessages(aiMessage.content)
+      : []
 
     if (aiMessages.length === 0) {
       throw new Error("No messages generated")
