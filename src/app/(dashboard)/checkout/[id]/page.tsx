@@ -13,6 +13,8 @@ const getBooking = db
     prospectId: schema.booking.prospectId,
     listingId: schema.booking.listingId,
     paymentAt: schema.booking.paymentAt,
+    stickerPrice: schema.booking.stickerPrice,
+    guestCount: schema.booking.guestCount,
     prospect: {
       name: schema.prospect.name,
       email: schema.prospect.email,

@@ -18,7 +18,7 @@ export function CheckoutPage(params: {
   const [checkOut, setCheckOut] = useState<Date | undefined>(
     booking.checkOut ? new Date(booking.checkOut) : undefined
   )
-  const [guests, setGuests] = useState(1)
+  const [guests, setGuests] = useState(booking.guestCount)
 
   const handleDateChange = (type: "checkIn" | "checkOut", date?: Date) => {
     if (type === "checkIn") {
