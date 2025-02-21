@@ -4,6 +4,7 @@ import * as schema from "@/server/db/schema"
 import { eq, and, isNull } from "drizzle-orm"
 import { createId } from "@paralleldrive/cuid2"
 import { env } from "@/env"
+import { postmark } from "@/server/postmark"
 
 export const storeGuestInfo = inngest.createFunction(
   { id: "agent-store-guest-info" },
@@ -75,6 +76,25 @@ export const createBookingIntent = inngest.createFunction(
       ? `https://${env.VERCEL_URL}`
       : "http://localhost:3000"
     const checkoutUrl = `${baseUrl}/checkout/${booking.id}`
+
+    const prospect = await db
+      .select({
+        email: schema.prospect.email,
+        name: schema.prospect.name
+      })
+      .from(schema.prospect)
+      .where(eq(schema.prospect.id, prospectId))
+      .limit(1)
+      .then((rows) => rows[0])
+
+    if (prospect?.email) {
+      await postmark.sendEmail({
+        From: "contact@bjornpagen.com",
+        To: prospect.email,
+        Subject: "Complete your booking",
+        TextBody: `Hi ${prospect.name || "there"},\n\nComplete your booking here: ${checkoutUrl}\n\nBest regards,\nDM2Stay Team`
+      })
+    }
 
     const messageId = createId()
     await db.insert(schema.message).values({
