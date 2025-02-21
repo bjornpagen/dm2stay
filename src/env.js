@@ -16,7 +16,8 @@ export const env = createEnv({
     APIFY_API_TOKEN: z.string(),
     APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL: z.string().url(),
     POSTMARK_API_KEY: z.string(),
-    OPENAI_API_KEY: z.string()
+    OPENAI_API_KEY: z.string(),
+    DM2STAY_API_SECRET: z.string()
   },
 
   /**
@@ -39,7 +40,8 @@ export const env = createEnv({
     APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL:
       process.env.APIFY_SCRAPE_SUCCEEDED_WEBHOOK_URL,
     POSTMARK_API_KEY: process.env.POSTMARK_API_KEY,
-    OPENAI_API_KEY: process.env.OPENAI_API_KEY
+    OPENAI_API_KEY: process.env.OPENAI_API_KEY,
+    DM2STAY_API_SECRET: process.env.DM2STAY_API_SECRET
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially

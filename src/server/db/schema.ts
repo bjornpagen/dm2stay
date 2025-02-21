@@ -15,6 +15,7 @@ import {
 import { sql } from "drizzle-orm"
 import { relations } from "drizzle-orm"
 import type { ListingData } from "@/server/types"
+import type { ChatCompletionMessageToolCall } from "openai/resources/index.mjs"
 
 export const schema = pgSchema("dm2stay")
 
@@ -319,7 +320,7 @@ export const message = schema.table(
       .notNull()
       .$defaultFn(() => new Date())
       .$onUpdateFn(() => new Date()),
-    toolCalls: jsonb("tool_calls")
+    toolCalls: jsonb("tool_calls").$type<ChatCompletionMessageToolCall[]>()
   },
   (table) => ({
     idLengthCheck: check("message_id_length", sql`length(${table.id}) = 24`),
