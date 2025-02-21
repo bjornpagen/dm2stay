@@ -54,12 +54,12 @@ const tools: ChatCompletionTool[] = [
             description: "The selected listing ID"
           },
           checkIn: {
-            type: "string",
-            description: "Check-in date in ISO format"
+            type: ["string", "null"],
+            description: "Check-in date in ISO format if provided"
           },
           checkOut: {
-            type: "string",
-            description: "Check-out date in ISO format"
+            type: ["string", "null"],
+            description: "Check-out date in ISO format if provided"
           }
         },
         required: ["listingId", "checkIn", "checkOut"],
@@ -198,7 +198,7 @@ export const messageReceived = inngest.createFunction(
 ${formatProspectInfo(prospect)}
 
 [PROPERTY${listings.length === 1 ? "" : " OPTIONS"}]
-${formatListingInfo(listings)}${listings.length === 1 ? "\nThis is our featured property with limited availability." : "\nEach property offers a unique experience for our guests."}
+${formatListingInfo(listings)}${listings.length === 1 ? "\nThis is our exclusive property - all questions and information provided will be about this listing." : "\nEach property offers a unique experience for our guests."}
 
 [BOOKING STATUS]
 ${formatBookingStatus(activeBooking)}
@@ -217,11 +217,12 @@ CRITICAL RESPONSE REQUIREMENTS:
 8. NEVER call createBookingIntentAndSendCheckoutLink without first having the guest's email
 
 GUEST INFO COLLECTION:
-- Email is required before sending any booking links
-- If email is missing, naturally work it into the conversation
+- Email is mandatory before sending any booking links
+- Name is strongly preferred and should be collected early
+- Check-in date is strongly preferred and should be asked for early
+- Check-out date is nice to have but not required
 - Use storeGuestInfo tool when guest provides their information
-- Don't be pushy about collecting info - keep it conversational
-- Name collection is encouraged but not required for booking links
+- Keep information collection conversational but purposeful
 
 MESSAGE STRUCTURE:
 - First message: Key information or answer
@@ -284,8 +285,6 @@ AVOID:
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
     )
 
-    console.log(JSON.stringify(conversationHistory, null, 2))
-
     const messages = [systemMessage, ...conversationHistory]
 
     const response = await openai.chat.completions.create({
@@ -304,6 +303,8 @@ AVOID:
       throw new Error("No response from OpenAI")
     }
 
+    console.log(JSON.stringify(aiMessage, null, 2))
+
     const parseAiMessages = (content: string) =>
       content
         .split("\n")
@@ -315,9 +316,11 @@ AVOID:
         }))
 
     if (aiMessage.tool_calls?.length) {
+      const aiMessageId = createId()
       await db.insert(schema.message).values({
+        id: aiMessageId,
         source: "ai" as const,
-        content: aiMessage.content ?? "",
+        content: "",
         prospectId: prospect.id,
         userId: message.userId,
         toolCalls: aiMessage.tool_calls
@@ -384,7 +387,7 @@ AVOID:
 
       return inngest.send({
         name: "agent/message.received",
-        data: { messageId }
+        data: { messageId: aiMessageId }
       })
     }
 

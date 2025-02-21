@@ -28,8 +28,8 @@ const events = {
     data: z.object({
       prospectId: z.string(),
       listingId: z.string(),
-      checkIn: z.string(),
-      checkOut: z.string()
+      checkIn: z.string().nullable(),
+      checkOut: z.string().nullable()
     })
   },
   "apify/scrape.queued": {

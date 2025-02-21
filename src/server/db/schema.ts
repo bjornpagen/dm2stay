@@ -353,8 +353,8 @@ export const booking = schema.table(
       .notNull()
       .references(() => prospect.id),
     listingId: text("listing_id").references(() => listing.id),
-    checkIn: timestamp("check_in", { withTimezone: false }).notNull(),
-    checkOut: timestamp("check_out", { withTimezone: false }).notNull(),
+    checkIn: timestamp("check_in", { withTimezone: false }),
+    checkOut: timestamp("check_out", { withTimezone: false }),
     stripePaymentIntentId: text("stripe_payment_intent_id"),
     paymentAt: timestamp("payment_at", { withTimezone: false }),
     stickerPrice: integer("sticker_price"),

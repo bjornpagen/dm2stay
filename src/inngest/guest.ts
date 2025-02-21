@@ -47,8 +47,8 @@ export const createBookingIntent = inngest.createFunction(
       .values({
         prospectId,
         listingId,
-        checkIn: new Date(checkIn),
-        checkOut: new Date(checkOut)
+        checkIn: checkIn ? new Date(checkIn) : undefined,
+        checkOut: checkOut ? new Date(checkOut) : undefined
       })
       .onConflictDoUpdate({
         target: schema.booking.id,
@@ -58,8 +58,8 @@ export const createBookingIntent = inngest.createFunction(
           isNull(schema.booking.paymentAt)
         ),
         set: {
-          checkIn: new Date(checkIn),
-          checkOut: new Date(checkOut),
+          checkIn: checkIn ? new Date(checkIn) : undefined,
+          checkOut: checkOut ? new Date(checkOut) : undefined,
           updatedAt: new Date()
         }
       })
