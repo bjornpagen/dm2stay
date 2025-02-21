@@ -1,6 +1,12 @@
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
+/**
+ * This is currently a placeholder implementation for Instagram webhook handling.
+ * TODO: Implement actual database logic for processing and storing Instagram updates,
+ * including handling different types of webhook events (posts, stories, mentions, etc.)
+ * and persisting relevant data to the database.
+ */
 export async function POST(request: NextRequest) {
   try {
     const data = await request.json()
@@ -13,24 +19,25 @@ export async function POST(request: NextRequest) {
   }
 }
 
+/**
+ * This endpoint serves as the verification mechanism for Instagram's webhook callback functionality.
+ * When setting up webhooks in the Meta dashboard, Instagram will send a GET request to verify
+ * ownership of this endpoint. It validates the hub.verify_token against our configured token
+ * and responds with the hub.challenge value to complete the verification process.
+ */
 export async function GET(request: NextRequest) {
   try {
-    const searchParams = request.nextUrl.searchParams;
-    const mode = searchParams.get('hub.mode');
-    const token = searchParams.get('hub.verify_token');
-    const challenge = searchParams.get('hub.challenge');
+    const searchParams = request.nextUrl.searchParams
 
-    // Replace 'YOUR_VERIFY_TOKEN' with the token you'll enter in the Meta dashboard
-    const VERIFY_TOKEN = 'TEST_VERIFY_TOKEN';
-
-    if (mode === 'subscribe' && token === VERIFY_TOKEN) {
-      console.log('Webhook verified successfully');
-      return new Response(challenge, { status: 200 });
-    } else {
-      return new Response('Forbidden', { status: 403 });
+    const VERIFY_TOKEN = process.env.INSTAGRAM_VERIFY_TOKEN || ""
+    if (searchParams.get("hub.mode") === "subscribe" && searchParams.get("hub.verify_token") === VERIFY_TOKEN) {
+      console.log("Webhook verified successfully")
+      return new Response(searchParams.get("hub.challenge"), { status: 200 })
     }
+
+    return new Response("Forbidden", { status: 403 })
   } catch (error) {
-    console.error("Error processing webhook:", error);
-    return NextResponse.json({ success: false }, { status: 500 });
+    console.error("Error processing webhook:", error)
+    return NextResponse.json({ success: false }, { status: 500 })
   }
 }
