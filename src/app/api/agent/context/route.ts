@@ -6,8 +6,7 @@ import { eq, desc, and, gte, asc } from "drizzle-orm"
 import { env } from "@/env"
 
 const requestSchema = z.object({
-  phone: z.string(),
-  userId: z.string()
+  phone: z.string()
 })
 
 import type { ListingData } from "@/server/types"
@@ -65,9 +64,18 @@ export type ProspectData = {
 }
 
 export async function getProspectDataByPhone(
-  phone: string,
-  userId: string
+  phone: string
 ): Promise<ProspectData> {
+  const user = await db.query.user.findFirst({
+    where: eq(schema.user.email, "bjorn.pagen@gauntletai.com"),
+    columns: {
+      id: true
+    }
+  })
+  if (!user) {
+    throw new Error("Test user not found")
+  }
+
   const prospect = await db
     .insert(schema.prospect)
     .values({
@@ -108,7 +116,7 @@ export async function getProspectDataByPhone(
         .where(
           and(
             eq(schema.message.prospectId, prospect.id),
-            eq(schema.message.userId, userId)
+            eq(schema.message.userId, user.id)
           )
         )
         .orderBy(asc(schema.message.createdAt)),
@@ -121,7 +129,7 @@ export async function getProspectDataByPhone(
           airbnbData: schema.airbnbListing.data
         })
         .from(schema.listing)
-        .where(eq(schema.listing.userId, userId))
+        .where(eq(schema.listing.userId, user.id))
         .innerJoin(
           schema.airbnbListing,
           eq(schema.listing.airbnbId, schema.airbnbListing.airbnbId)
@@ -164,7 +172,7 @@ export async function getProspectDataByPhone(
         .where(
           and(
             eq(schema.toolCall.prospectId, prospect.id),
-            eq(schema.toolCall.userId, userId)
+            eq(schema.toolCall.userId, user.id)
           )
         )
         .orderBy(asc(schema.toolCall.createdAt))
@@ -187,8 +195,8 @@ export async function POST(request: Request) {
 
   try {
     const body = await request.json()
-    const { phone, userId } = requestSchema.parse(body)
-    const data = await getProspectDataByPhone(phone, userId)
+    const { phone } = requestSchema.parse(body)
+    const data = await getProspectDataByPhone(phone)
     return NextResponse.json(data)
   } catch (error) {
     return NextResponse.json(
