@@ -73,9 +73,9 @@ export function formatBookingFocus(activeBooking: BookingInfo | undefined) {
 - Offer to answer any pre-arrival questions
 - Provide relevant property and area details`
     : `Focus on booking completion:
+- Your secure checkout link is powered by Stripe, a trusted global payment platform
+- All payment information is encrypted and processed securely
 - Reinforce value and amenities
-- Make payment process feel secure and simple
-- Address any remaining questions promptly
 - Create natural urgency through limited availability`
 }
 
