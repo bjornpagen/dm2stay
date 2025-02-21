@@ -48,8 +48,8 @@ export type ProspectData = {
     updatedAt: Date
     listingId: string | null
     prospectId: string
-    checkIn: Date
-    checkOut: Date
+    checkIn: Date | null
+    checkOut: Date | null
     paymentAt: Date | null
     stickerPrice: number | null
     guestCount: number
@@ -63,9 +63,7 @@ export type ProspectData = {
   }[]
 }
 
-export async function getProspectDataByPhone(
-  phone: string
-): Promise<ProspectData> {
+async function getProspectDataByPhone(phone: string): Promise<ProspectData> {
   const user = await db.query.user.findFirst({
     where: eq(schema.user.email, "bjorn.pagen@gauntletai.com"),
     columns: {
