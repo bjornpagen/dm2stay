@@ -9,6 +9,11 @@ import { PricingBreakdown } from "@/components/pricing-breakdown"
 import type { Booking } from "@/app/(dashboard)/checkout/[id]/page"
 import { redirect } from "next/navigation"
 
+function adjustForTimezone(date: Date): Date {
+  const localDate = new Date(date.getTime() + date.getTimezoneOffset() * 60000)
+  return localDate
+}
+
 export function CheckoutPage(params: {
   booking: Promise<Booking>
 }) {
@@ -18,10 +23,10 @@ export function CheckoutPage(params: {
   }
 
   const [checkIn, setCheckIn] = useState<Date | undefined>(
-    booking.checkIn ? new Date(booking.checkIn) : undefined
+    booking.checkIn ? adjustForTimezone(booking.checkIn) : undefined
   )
   const [checkOut, setCheckOut] = useState<Date | undefined>(
-    booking.checkOut ? new Date(booking.checkOut) : undefined
+    booking.checkOut ? adjustForTimezone(booking.checkOut) : undefined
   )
   const [guests, setGuests] = useState(booking.guestCount)
 

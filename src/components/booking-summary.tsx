@@ -52,8 +52,13 @@ export function BookingSummary(params: { bookings: Promise<Booking[]> }) {
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">
                     <Calendar className="h-4 w-4 flex-shrink-0" />
                     <span className="flex-wrap">
-                      {new Date(booking.checkIn).toLocaleDateString()} →{" "}
-                      {new Date(booking.checkOut).toLocaleDateString()}
+                      {booking.checkIn
+                        ? new Date(booking.checkIn).toLocaleDateString()
+                        : "N/A"}
+                      →{" "}
+                      {booking.checkOut
+                        ? new Date(booking.checkOut).toLocaleDateString()
+                        : "N/A"}
                     </span>
                   </div>
                   <div className="flex items-center gap-2 text-sm text-muted-foreground">

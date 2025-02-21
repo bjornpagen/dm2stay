@@ -100,23 +100,23 @@ Pricing Information:
 }
 
 export function getBookingStatus(booking: {
-  checkIn: Date
-  checkOut: Date
+  checkIn: Date | null
+  checkOut: Date | null
   paymentAt: Date | null
 }) {
   const now = new Date()
-  const checkIn = new Date(booking.checkIn)
-  const checkOut = new Date(booking.checkOut)
+  const checkIn = booking.checkIn ? new Date(booking.checkIn) : null
+  const checkOut = booking.checkOut ? new Date(booking.checkOut) : null
 
   if (booking.paymentAt === null) {
     return "pending" as const
   }
 
-  if (now > checkOut) {
+  if (checkOut && now > checkOut) {
     return "completed" as const
   }
 
-  if (now >= checkIn && now <= checkOut) {
+  if (checkIn && checkOut && now >= checkIn && now <= checkOut) {
     return "active" as const
   }
 
