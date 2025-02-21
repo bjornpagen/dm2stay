@@ -90,7 +90,6 @@ export const messageReceived = inngest.createFunction(
     if (!message) {
       throw new Error("Message not found")
     }
-    const { prospectId, userId, content, createdAt } = message
 
     const [
       prospect,
@@ -111,7 +110,7 @@ export const messageReceived = inngest.createFunction(
           updatedAt: schema.prospect.updatedAt
         })
         .from(schema.prospect)
-        .where(eq(schema.prospect.id, prospectId))
+        .where(eq(schema.prospect.id, message.prospectId))
         .limit(1)
         .then((rows) => rows[0]),
       db
@@ -124,8 +123,8 @@ export const messageReceived = inngest.createFunction(
         .from(schema.message)
         .where(
           and(
-            eq(schema.message.prospectId, prospectId),
-            eq(schema.message.userId, userId),
+            eq(schema.message.prospectId, message.prospectId),
+            eq(schema.message.userId, message.userId),
             ne(schema.message.id, messageId)
           )
         )
@@ -139,7 +138,7 @@ export const messageReceived = inngest.createFunction(
           airbnbData: schema.airbnbListing.data
         })
         .from(schema.listing)
-        .where(eq(schema.listing.userId, userId))
+        .where(eq(schema.listing.userId, message.userId))
         .innerJoin(
           schema.airbnbListing,
           eq(schema.listing.airbnbId, schema.airbnbListing.airbnbId)
@@ -160,7 +159,7 @@ export const messageReceived = inngest.createFunction(
         .from(schema.booking)
         .where(
           and(
-            eq(schema.booking.prospectId, prospectId),
+            eq(schema.booking.prospectId, message.prospectId),
             gte(
               schema.booking.createdAt,
               new Date(Date.now() - 24 * 60 * 60 * 1000)
@@ -181,8 +180,8 @@ export const messageReceived = inngest.createFunction(
         .from(schema.toolCall)
         .where(
           and(
-            eq(schema.toolCall.prospectId, prospectId),
-            eq(schema.toolCall.userId, userId)
+            eq(schema.toolCall.prospectId, message.prospectId),
+            eq(schema.toolCall.userId, message.userId)
           )
         )
         .orderBy(asc(schema.toolCall.createdAt))
@@ -274,7 +273,11 @@ AVOID:
         content: `${tc.functionName}: args ${JSON.stringify(tc.functionArgs)} returned ${tc.result}`,
         createdAt: tc.createdAt
       })),
-      { role: "user" as const, content, createdAt }
+      {
+        role: "user" as const,
+        content: message.content,
+        createdAt: message.createdAt
+      }
     ].sort(
       (a, b) =>
         new Date(a.createdAt).getTime() - new Date(b.createdAt).getTime()
