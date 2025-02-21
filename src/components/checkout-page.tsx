@@ -6,7 +6,7 @@ import { useState } from "react"
 import { CheckoutForm } from "@/components/checkout-form"
 import { PropertyDetails } from "@/components/property-details"
 import { PricingBreakdown } from "@/components/pricing-breakdown"
-import type { Booking } from "@/app/(dashboard)/checkout/[id]/page"
+import type { Booking } from "@/app/checkout/[id]/page"
 import { redirect } from "next/navigation"
 
 function adjustForTimezone(date: Date): Date {
