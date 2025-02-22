@@ -29,7 +29,6 @@ export const auth = betterAuth({
           clientSecret: env.INSTAGRAM_APP_SECRET,
           authorizationUrl: "https://www.instagram.com/oauth/authorize",
           tokenUrl: "https://api.instagram.com/oauth/access_token",
-          responseType: "code",
           scopes: [
             "instagram_business_basic",
             "instagram_business_manage_messages",
