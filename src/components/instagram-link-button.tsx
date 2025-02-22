@@ -5,12 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Instagram } from "lucide-react"
 import { authClient } from "@/lib/auth"
 
-type OAuthConnection = {
-  providerId: string
-  userId: string
-  createdAt: string
-}
-
 export function InstagramLinkButton() {
   const [isLinking, setIsLinking] = React.useState(false)
   const [isLinked, setIsLinked] = React.useState(false)
