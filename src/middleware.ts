@@ -1,15 +1,11 @@
 import { type NextRequest, NextResponse } from "next/server"
 import { getSessionCookie } from "better-auth"
 
-const PUBLIC_ROUTES: RegExp[] = [
-  /^\/$/,
-  /^\/api\/.*/,
-  /^\/signin.*/,
-  /^\/signup.*/
-]
+const PUBLIC_ROUTE_PATTERN = new RegExp(
+  ["^/$", "^/api/.*", "^/signin.*", "^/signup.*"].join("|")
+)
 
-const isPublicRoute = (path: string) =>
-  PUBLIC_ROUTES.some((regex) => regex.test(path))
+const isPublicRoute = (path: string) => PUBLIC_ROUTE_PATTERN.test(path)
 
 export const config = {
   matcher: [
