@@ -7,6 +7,7 @@ import { env } from "@/env"
 import { nextCookies } from "better-auth/next-js"
 import { headers } from "next/headers"
 import { redirect } from "next/navigation"
+import { genericOAuth } from "better-auth/plugins"
 
 export const auth = betterAuth({
   database: drizzleAdapter(db, {
@@ -16,7 +17,24 @@ export const auth = betterAuth({
   baseURL: env.VERCEL_URL
     ? `https://${env.VERCEL_URL}`
     : "http://localhost:3000",
-  plugins: [nextCookies()],
+  plugins: [
+    nextCookies(),
+    genericOAuth({
+      config: [
+        {
+          providerId: "instagram",
+          clientId: env.INSTAGRAM_APP_ID,
+          clientSecret: env.INSTAGRAM_APP_SECRET,
+          authorizationUrl: "https://www.instagram.com/oauth/authorize",
+          tokenUrl: "https://api.instagram.com/oauth/access_token",
+          scopes: [
+            "instagram_business_basic",
+            "instagram_business_manage_messages"
+          ]
+        }
+      ]
+    })
+  ],
   emailAndPassword: {
     enabled: true
   },
