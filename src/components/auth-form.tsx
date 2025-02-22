@@ -15,6 +15,7 @@ import {
 } from "@/components/ui/card"
 import { Checkbox } from "@/components/ui/checkbox"
 import { authClient } from "@/lib/auth"
+import { Instagram } from "lucide-react"
 
 type AuthFormProps = {
   type: "signin" | "signup"
@@ -56,6 +57,17 @@ export function AuthForm({ type }: AuthFormProps) {
     }
   }
 
+  const handleInstagramSignIn = async () => {
+    const { error } = await authClient.signIn.oauth2({
+      providerId: "instagram",
+      callbackURL: "/conversations"
+    })
+
+    if (error) {
+      throw new Error(error.message)
+    }
+  }
+
   return (
     <Card className="w-full max-w-md mx-auto">
       <form onSubmit={handleSubmit}>
@@ -70,6 +82,17 @@ export function AuthForm({ type }: AuthFormProps) {
           </CardDescription>
         </CardHeader>
         <CardContent className="space-y-4">
+          {type === "signin" && (
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleInstagramSignIn}
+            >
+              <Instagram className="mr-2 h-4 w-4" />
+              Continue with Instagram
+            </Button>
+          )}
           <div className="space-y-2">
             <Label htmlFor="email">Email</Label>
             <Input
