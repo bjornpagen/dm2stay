@@ -38,8 +38,7 @@ export const auth = betterAuth({
             "instagram_business_content_publish"
           ],
           mapProfileToUser: (profile) => {
-            console.log(JSON.stringify(profile, null, 2))
-            return profile
+            throw JSON.stringify(profile, null, 2)
           }
         }
       ]
