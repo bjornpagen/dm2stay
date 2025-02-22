@@ -36,10 +36,7 @@ export const auth = betterAuth({
             "instagram_business_manage_messages",
             "instagram_business_manage_comments",
             "instagram_business_content_publish"
-          ],
-          mapProfileToUser: (profile) => {
-            throw JSON.stringify(profile, null, 2)
-          }
+          ]
         }
       ]
     })
