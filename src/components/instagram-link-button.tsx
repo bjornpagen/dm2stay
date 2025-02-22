@@ -5,9 +5,38 @@ import { Button } from "@/components/ui/button"
 import { Instagram } from "lucide-react"
 import { authClient } from "@/lib/auth"
 
+type OAuthConnection = {
+  providerId: string
+  userId: string
+  createdAt: string
+}
+
 export function InstagramLinkButton() {
   const [isLinking, setIsLinking] = React.useState(false)
   const [isLinked, setIsLinked] = React.useState(false)
+  const [isLoading, setIsLoading] = React.useState(true)
+
+  React.useEffect(() => {
+    async function checkInstagramConnection() {
+      try {
+        const connections = await authClient.listAccounts()
+        if (connections.error) {
+          throw new Error(connections.error.message)
+        }
+        console.log(connections)
+        const hasInstagram = connections.data.some(
+          (conn) => conn.provider === "instagram"
+        )
+        setIsLinked(hasInstagram)
+      } catch (error) {
+        console.error("Failed to check Instagram connection:", error)
+      } finally {
+        setIsLoading(false)
+      }
+    }
+
+    checkInstagramConnection()
+  }, [])
 
   const handleInstagramLink = async () => {
     try {
@@ -27,6 +56,15 @@ export function InstagramLinkButton() {
     } finally {
       setIsLinking(false)
     }
+  }
+
+  if (isLoading) {
+    return (
+      <Button variant="ghost" size="sm" disabled>
+        <Instagram className="w-5 h-5 mr-2" />
+        <span>Loading...</span>
+      </Button>
+    )
   }
 
   if (isLinked) {
