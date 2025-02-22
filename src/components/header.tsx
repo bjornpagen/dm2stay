@@ -1,6 +1,7 @@
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { MessageSquare, HomeIcon, Users } from "lucide-react"
+import { InstagramLinkButton } from "@/components/instagram-link-button"
 
 const menuItems = [
   { title: "Conversations", icon: MessageSquare, url: "/conversations" },
@@ -16,7 +17,7 @@ export function Header() {
           <Link href="/" className="text-xl font-bold">
             Vacation Rental Dashboard
           </Link>
-          <nav>
+          <nav className="flex items-center gap-4">
             <ul className="flex items-center space-x-2">
               {menuItems.map((item) => (
                 <li key={item.title}>
@@ -29,6 +30,8 @@ export function Header() {
                 </li>
               ))}
             </ul>
+            <div className="h-8 w-px bg-border" />
+            <InstagramLinkButton />
           </nav>
         </div>
       </div>
