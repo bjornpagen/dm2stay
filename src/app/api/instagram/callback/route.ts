@@ -1,3 +1,4 @@
+import { env } from "@/env"
 import { NextResponse } from "next/server"
 import type { NextRequest } from "next/server"
 
@@ -29,7 +30,7 @@ export async function GET(request: NextRequest) {
   try {
     const searchParams = request.nextUrl.searchParams
 
-    const VERIFY_TOKEN = process.env.INSTAGRAM_VERIFY_TOKEN || ""
+    const VERIFY_TOKEN = env.INSTAGRAM_WEBHOOK_SECRET
     if (
       searchParams.get("hub.mode") === "subscribe" &&
       searchParams.get("hub.verify_token") === VERIFY_TOKEN

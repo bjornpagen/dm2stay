@@ -20,7 +20,8 @@ export const env = createEnv({
     DM2STAY_API_SECRET: z.string(),
     INSTAGRAM_APP_ID: z.string(),
     INSTAGRAM_APP_SECRET: z.string(),
-    INSTAGRAM_WEBHOOK_URL: z.string().url()
+    INSTAGRAM_WEBHOOK_URL: z.string().url(),
+    INSTAGRAM_WEBHOOK_SECRET: z.string()
   },
 
   /**
@@ -47,7 +48,8 @@ export const env = createEnv({
     DM2STAY_API_SECRET: process.env.DM2STAY_API_SECRET,
     INSTAGRAM_APP_ID: process.env.INSTAGRAM_APP_ID,
     INSTAGRAM_APP_SECRET: process.env.INSTAGRAM_APP_SECRET,
-    INSTAGRAM_WEBHOOK_URL: process.env.INSTAGRAM_WEBHOOK_URL
+    INSTAGRAM_WEBHOOK_URL: process.env.INSTAGRAM_WEBHOOK_URL,
+    INSTAGRAM_WEBHOOK_SECRET: process.env.INSTAGRAM_WEBHOOK_SECRET
   },
   /**
    * Run `build` or `dev` with `SKIP_ENV_VALIDATION` to skip env validation. This is especially
