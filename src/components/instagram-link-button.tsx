@@ -43,8 +43,6 @@ export function InstagramLinkButton() {
       if (response.error) {
         throw new Error(response.error.message)
       }
-
-      setIsLinked(true)
     } catch (error) {
       console.error("Failed to link Instagram:", error)
     } finally {

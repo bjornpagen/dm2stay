@@ -29,7 +29,6 @@ export const auth = betterAuth({
           clientSecret: env.INSTAGRAM_APP_SECRET,
           authorizationUrl: "https://www.instagram.com/oauth/authorize",
           tokenUrl: "https://api.instagram.com/oauth/access_token",
-          redirectURI: "https://dm2stay.vercel.app/conversations",
           responseType: "code",
           scopes: [
             "instagram_business_basic",
