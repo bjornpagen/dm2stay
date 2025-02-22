@@ -11,7 +11,7 @@ export async function POST(request: NextRequest) {
   try {
     const data = await request.json()
     console.log("Instagram webhook data:", JSON.stringify(data, null, 2))
-    
+
     return NextResponse.json({ success: true })
   } catch (error) {
     console.error("Error processing webhook:", error)
@@ -30,7 +30,10 @@ export async function GET(request: NextRequest) {
     const searchParams = request.nextUrl.searchParams
 
     const VERIFY_TOKEN = process.env.INSTAGRAM_VERIFY_TOKEN || ""
-    if (searchParams.get("hub.mode") === "subscribe" && searchParams.get("hub.verify_token") === VERIFY_TOKEN) {
+    if (
+      searchParams.get("hub.mode") === "subscribe" &&
+      searchParams.get("hub.verify_token") === VERIFY_TOKEN
+    ) {
       console.log("Webhook verified successfully")
       return new Response(searchParams.get("hub.challenge"), { status: 200 })
     }

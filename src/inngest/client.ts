@@ -48,6 +48,9 @@ const events = {
       })
     })
   },
+  "instagram/webhook": {
+    data: z.any()
+  },
   "test/message.send": {
     data: z.object({
       content: z.string()
