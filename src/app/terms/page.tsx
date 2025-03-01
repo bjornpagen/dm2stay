@@ -15,7 +15,6 @@ export default function TermsOfService() {
             part of these terms, you may not use our service.
           </p>
         </section>
-
         <section>
           <h2 className="text-2xl font-semibold mb-4">2. Definitions</h2>
           <div className="space-y-4">
@@ -42,7 +41,6 @@ export default function TermsOfService() {
             </ul>
           </div>
         </section>
-
         <section>
           <h2 className="text-2xl font-semibold mb-4">
             3. Account Registration
@@ -62,7 +60,6 @@ export default function TermsOfService() {
             </ul>
           </div>
         </section>
-
         <section>
           <h2 className="text-2xl font-semibold mb-4">
             4. User Responsibilities
@@ -81,7 +78,6 @@ export default function TermsOfService() {
             </ul>
           </div>
         </section>
-
         <section>
           <h2 className="text-2xl font-semibold mb-4">
             5. Property Listings and Bookings
@@ -100,7 +96,6 @@ export default function TermsOfService() {
             </ul>
           </div>
         </section>
-
         <section>
           <h2 className="text-2xl font-semibold mb-4">6. Payments and Fees</h2>
           <p className="text-muted-foreground">
@@ -110,7 +105,6 @@ export default function TermsOfService() {
             terms of each booking.
           </p>
         </section>
-
         <section>
           <h2 className="text-2xl font-semibold mb-4">
             7. Intellectual Property
@@ -122,7 +116,6 @@ export default function TermsOfService() {
             laws.
           </p>
         </section>
-
         <section>
           <h2 className="text-2xl font-semibold mb-4">
             8. Limitation of Liability
@@ -135,7 +128,6 @@ export default function TermsOfService() {
             intangible losses.
           </p>
         </section>
-
         <section>
           <h2 className="text-2xl font-semibold mb-4">9. Dispute Resolution</h2>
           <p className="text-muted-foreground">
@@ -146,7 +138,6 @@ export default function TermsOfService() {
             or consolidated basis.
           </p>
         </section>
-
         <section>
           <h2 className="text-2xl font-semibold mb-4">
             10. Modifications to Terms
@@ -159,7 +150,6 @@ export default function TermsOfService() {
             of the new Terms.
           </p>
         </section>
-
         <section>
           <h2 className="text-2xl font-semibold mb-4">
             11. Contact Information
@@ -174,7 +164,6 @@ export default function TermsOfService() {
             </a>
           </p>
         </section>
-
         <p className="text-sm text-muted-foreground text-right">
           Last updated: February 22, 2025
         </p>
